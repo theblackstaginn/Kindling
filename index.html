@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0c10" />
+  <title>Kindling — Pagan Motivation</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{
+      --bg:#0b0c10; --card:#141824; --muted:#9aa3b2; --text:#e7e9ee;
+      --line:#273046; --accent:#2a3cff; --ok:#45d483; --warn:#ffcc66;
+    }
+    body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
+    header{padding:16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,12,16,.92);backdrop-filter:blur(10px);z-index:10;}
+    h1{margin:0;font-size:18px;letter-spacing:.4px;}
+    .sub{margin-top:4px;font-size:12px;color:var(--muted);}
+    main{padding:16px;max-width:920px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:12px;}
+    @media (min-width: 920px){ main{grid-template-columns:1.2fr .8fr;} }
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;}
+    .tag{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);display:inline-flex;gap:8px;align-items:center;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+    button,input,select,textarea{
+      width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--line);
+      background:#0f1320;color:var(--text);padding:10px 12px;font-size:14px;
+    }
+    textarea{min-height:72px;resize:vertical;}
+    button{cursor:pointer;background:#1a2140;}
+    button.primary{background:var(--accent);border-color:var(--accent);}
+    button.ghost{background:#0f1320;}
+    .grid{display:grid;grid-template-columns:1fr;gap:10px;}
+    @media (min-width: 560px){ .grid{grid-template-columns:1fr 1fr;} }
+    .big{font-size:18px;font-weight:800;line-height:1.25;margin:10px 0 6px;}
+    .muted{color:var(--muted);font-size:12px;}
+    .hr{border:none;border-top:1px solid var(--line);margin:12px 0;}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#0f1320;color:var(--muted);font-size:12px;}
+    .ok{color:var(--ok);} .warn{color:var(--warn);}
+    .list{display:flex;flex-direction:column;gap:8px;}
+    .item{padding:10px;border:1px solid var(--line);background:#0f1320;border-radius:12px;}
+    .item .t{font-weight:700;margin-bottom:4px;}
+    .item .d{font-size:12px;color:var(--muted);line-height:1.4;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+    .tab{padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#0f1320;color:var(--muted);cursor:pointer;user-select:none;}
+    .tab.active{border-color:var(--accent);color:var(--text);}
+    .hidden{display:none;}
+    a{color:inherit;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Kindling</h1>
+  <div class="sub">Pagan motivation, discipline, and quiet power — offline-first. No accounts. Stored on your device.</div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="row">
+      <div>
+        <span class="tag">Daily Rite</span>
+        <div class="muted" id="todayLine">—</div>
+      </div>
+      <div class="row" style="gap:8px;justify-content:flex-end;">
+        <button class="ghost" id="refreshBtn" style="width:auto;">New draw</button>
+        <button id="pinBtn" style="width:auto;">Pin</button>
+      </div>
+    </div>
+
+    <div class="big" id="headline">—</div>
+    <div class="muted" id="subline">—</div>
+
+    <div class="hr"></div>
+
+    <div class="grid">
+      <div class="item">
+        <div class="t">Element</div>
+        <div class="d" id="elementText">—</div>
+      </div>
+      <div class="item">
+        <div class="t">Micro‑action (wealth + stability)</div>
+        <div class="d" id="actionText">—</div>
+      </div>
+      <div class="item">
+        <div class="t">Boundary (protect the hearth)</div>
+        <div class="d" id="boundaryText">—</div>
+      </div>
+      <div class="item">
+        <div class="t">Mantra</div>
+        <div class="d" id="mantraText">—</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="row" style="justify-content:space-between;">
+      <span class="pill">Streak: <span id="streakNum" class="ok">0</span> days</span>
+      <button class="primary" id="completeBtn" style="width:auto;">Mark complete</button>
+    </div>
+
+    <div class="muted" style="margin-top:10px;">
+      Tip: “complete” means you did the micro‑action OR consciously held the boundary. Perfection is not the point. Continuity is.
+    </div>
+  </section>
+
+  <aside class="card">
+    <div class="tabs">
+      <div class="tab active" data-tab="journal">Journal</div>
+      <div class="tab" data-tab="custom">Custom</div>
+      <div class="tab" data-tab="backup">Backup</div>
+    </div>
+
+    <div id="tab-journal">
+      <span class="tag">One‑line journal</span>
+      <div class="muted" style="margin-top:6px;">Write one sentence. That’s enough to keep your mind honest.</div>
+      <div style="margin-top:10px;">
+        <textarea id="journalInput" placeholder="What did I do today that strengthens the hearth?"></textarea>
+        <div class="row" style="justify-content:flex-end;margin-top:10px;">
+          <button class="primary" id="saveJournalBtn" style="width:auto;">Save</button>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <span class="tag">Recent</span>
+      <div class="list" style="margin-top:10px;" id="journalList"></div>
+    </div>
+
+    <div id="tab-custom" class="hidden">
+      <span class="tag">Customize</span>
+      <div class="muted" style="margin-top:6px;">Add your own mantras and actions. The app will mix them into draws.</div>
+      <div class="hr"></div>
+
+      <label class="muted">Your mantras (one per line)</label>
+      <textarea id="customMantras" placeholder="Example: I keep the covenant with my future self."></textarea>
+
+      <div class="hr"></div>
+
+      <label class="muted">Your micro-actions (one per line)</label>
+      <textarea id="customActions" placeholder="Example: Export bucket ledger JSON backup."></textarea>
+
+      <div class="row" style="margin-top:10px;justify-content:flex-end;">
+        <button class="primary" id="saveCustomBtn" style="width:auto;">Save</button>
+      </div>
+
+      <div class="muted" style="margin-top:10px;">
+        Pro move: add 10–20 actions that directly increase cash flow, credit strength, or reduce risk.
+      </div>
+    </div>
+
+    <div id="tab-backup" class="hidden">
+      <span class="tag">Backup</span>
+      <div class="muted" style="margin-top:6px;">This app stores data locally. Export monthly.</div>
+      <div class="hr"></div>
+      <div class="row" style="gap:8px;justify-content:flex-start;">
+        <button id="exportBtn" style="width:auto;">Export JSON</button>
+        <label class="pill" style="cursor:pointer;">
+          Import JSON
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </label>
+      </div>
+      <div class="muted" style="margin-top:10px;">
+        iPhone note: clearing Safari website data will wipe local storage. Backup is sovereignty.
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  const KEY = "kindling_v1";
+  const $ = (id) => document.getElementById(id);
+
+  const defaultMantras = [
+    "I tend the hearth before I chase the horizon.",
+    "Small offerings, made daily, become power.",
+    "My discipline is my protection.",
+    "I do not bargain with my future.",
+    "I choose clarity over comfort.",
+    "I keep my word to myself.",
+  ];
+
+  const defaultActions = [
+    "Move $5–$20 toward the Emergency Buffer. (If already funded, invest it.)",
+    "Review bills due in the next 7 days and confirm autopay is set.",
+    "Make one debt‑reducing move: extra $5–$25 or a due‑date check.",
+    "Log today’s paycheck and allocate buckets (one minute, no drama).",
+    "Delete one useless subscription or renegotiate one recurring bill.",
+    "Do a 10‑minute “cash leak” sweep: fees, impulse spends, forgotten trials.",
+    "Send Donna receipt reminder / log Jeep escrow movement (if applicable).",
+    "Back up your financial ledger JSON to iCloud (monthly cadence).",
+  ];
+
+  const elements = [
+    { name:"Earth",  theme:"Stability, cash reserves, shelter, the long game.", focus:"Add weight to your foundations." },
+    { name:"Fire",   theme:"Action, will, decisive cuts, debt kills.", focus:"Burn what weakens you." },
+    { name:"Water",  theme:"Flow, budgets, routing, habit, endurance.", focus:"Redirect the river, not the rocks." },
+    { name:"Air",    theme:"Clarity, planning, language, boundaries.", focus:"Name the rule and obey it." },
+  ];
+
+  const boundaries = [
+    "No money moves without a rule. Impulse is a tax.",
+    "No discretionary spending from Bills Spine.",
+    "No borrowing from investing buckets — ever.",
+    "One job per account. Mixed offerings create chaos.",
+    "If it isn’t written down, it doesn’t exist.",
+    "Protect sleep and health; burnout is financial sabotage.",
+  ];
+
+  const headlines = [
+    "Kindle the next season.",
+    "Hold the boundary. Win the week.",
+    "Offer a small act. Keep the covenant.",
+    "Turn worry into one move.",
+    "Build leverage. Reduce risk.",
+    "Make the boring choice. Become unbreakable.",
+  ];
+
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
+  }
+  function save(s){
+    localStorage.setItem(KEY, JSON.stringify(s));
+  }
+  function todayISO(){
+    const d = new Date();
+    const tzOff = d.getTimezoneOffset()*60000;
+    return new Date(d - tzOff).toISOString().slice(0,10);
+  }
+  function seedFromDate(str){
+    // deterministic pseudo-random seed from YYYY-MM-DD
+    let h = 2166136261;
+    for (let i=0;i<str.length;i++){
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0);
+  }
+  function pick(arr, rnd){
+    return arr[Math.floor(rnd()*arr.length)];
+  }
+  function mulberry32(a){
+    return function() {
+      let t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+  }
+
+  function getCustomLines(text){
+    return (text || "")
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean)
+      .slice(0, 200);
+  }
+
+  function buildDraw(dateStr, forceNew=false){
+    const state = load();
+    const pinned = state.pinned || null;
+
+    if (pinned && pinned.date === dateStr && !forceNew){
+      return pinned.draw;
+    }
+
+    const customMantras = getCustomLines(state.customMantras);
+    const customActions = getCustomLines(state.customActions);
+    const mantras = defaultMantras.concat(customMantras);
+    const actions = defaultActions.concat(customActions);
+
+    const seed = seedFromDate(dateStr + (forceNew ? ("#" + Date.now()) : ""));
+    const rnd = mulberry32(seed);
+
+    const el = pick(elements, rnd);
+    const h = pick(headlines, rnd);
+    const b = pick(boundaries, rnd);
+    const m = pick(mantras, rnd);
+    const a = pick(actions, rnd);
+
+    return { date: dateStr, headline: h, subline: el.theme, element: el, boundary: b, mantra: m, action: a };
+  }
+
+  function renderDraw(draw){
+    $("todayLine").textContent = `Today: ${draw.date}`;
+    $("headline").textContent = draw.headline;
+    $("subline").textContent = draw.subline;
+    $("elementText").textContent = `${draw.element.name} — ${draw.element.focus}`;
+    $("actionText").textContent = draw.action;
+    $("boundaryText").textContent = draw.boundary;
+    $("mantraText").textContent = draw.mantra;
+  }
+
+  function streakCount(state){
+    const done = state.doneDays || {};
+    const today = todayISO();
+    // Count consecutive days ending today or yesterday if today not marked yet
+    const isDone = (d) => !!done[d];
+    const start = isDone(today) ? today : (() => {
+      const dt = new Date(today+"T00:00:00");
+      dt.setDate(dt.getDate()-1);
+      return dt.toISOString().slice(0,10);
+    })();
+
+    let count = 0;
+    let dt = new Date(start+"T00:00:00");
+    while (true){
+      const k = dt.toISOString().slice(0,10);
+      if (!isDone(k)) break;
+      count += 1;
+      dt.setDate(dt.getDate()-1);
+    }
+    return count;
+  }
+
+  function renderStreak(){
+    const state = load();
+    $("streakNum").textContent = String(streakCount(state));
+  }
+
+  function addJournalEntry(text){
+    const state = load();
+    const date = todayISO();
+    state.journal = state.journal || [];
+    state.journal.unshift({ date, text: text.trim() });
+    state.journal = state.journal.slice(0, 30);
+    save(state);
+    renderJournal();
+  }
+
+  function renderJournal(){
+    const state = load();
+    const list = $("journalList");
+    list.innerHTML = "";
+    const entries = (state.journal || []).slice(0, 12);
+
+    if (!entries.length){
+      const div = document.createElement("div");
+      div.className = "muted";
+      div.textContent = "No entries yet. One sentence a day is enough.";
+      list.appendChild(div);
+      return;
+    }
+
+    for (const e of entries){
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `<div class="t">${e.date}</div><div class="d">${escapeHtml(e.text)}</div>`;
+      list.appendChild(item);
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+  }
+
+  // Tabs
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+      const tab = t.dataset.tab;
+      ["journal","custom","backup"].forEach(k=>{
+        document.getElementById("tab-"+k).classList.toggle("hidden", k !== tab);
+      });
+    }, {passive:true});
+  });
+
+  // Buttons
+  $("refreshBtn").addEventListener("click", ()=>{
+    const date = todayISO();
+    const draw = buildDraw(date, true);
+    const state = load();
+    state.lastDraw = draw;
+    // If pinned for today, update pinned too (user explicitly asked for new draw)
+    if (state.pinned && state.pinned.date === date){
+      state.pinned.draw = draw;
+    }
+    save(state);
+    renderDraw(draw);
+  });
+
+  $("pinBtn").addEventListener("click", ()=>{
+    const state = load();
+    const date = todayISO();
+    const draw = buildDraw(date, false);
+    state.pinned = { date, draw };
+    save(state);
+    $("pinBtn").textContent = "Pinned";
+    setTimeout(()=> $("pinBtn").textContent = "Pin", 1200);
+  });
+
+  $("completeBtn").addEventListener("click", ()=>{
+    const state = load();
+    const date = todayISO();
+    state.doneDays = state.doneDays || {};
+    state.doneDays[date] = true;
+    save(state);
+    renderStreak();
+    $("completeBtn").textContent = "Done ✓";
+    setTimeout(()=> $("completeBtn").textContent = "Mark complete", 1200);
+  });
+
+  $("saveJournalBtn").addEventListener("click", ()=>{
+    const text = $("journalInput").value;
+    if (!text.trim()) return;
+    addJournalEntry(text);
+    $("journalInput").value = "";
+  });
+
+  $("saveCustomBtn").addEventListener("click", ()=>{
+    const state = load();
+    state.customMantras = $("customMantras").value || "";
+    state.customActions = $("customActions").value || "";
+    save(state);
+    $("saveCustomBtn").textContent = "Saved ✓";
+    setTimeout(()=> $("saveCustomBtn").textContent = "Save", 1200);
+  });
+
+  $("exportBtn").addEventListener("click", ()=>{
+    const state = load();
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "kindling-backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  $("importFile").addEventListener("change", async (ev)=>{
+    const file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    try{
+      const text = await file.text();
+      const obj = JSON.parse(text);
+      localStorage.setItem(KEY, JSON.stringify(obj));
+      init();
+      alert("Imported. Reloaded Kindling.");
+    }catch{
+      alert("Import failed. Make sure it is a Kindling JSON backup.");
+    }finally{
+      ev.target.value = "";
+    }
+  });
+
+  // Service worker (offline)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+
+  function init(){
+    const date = todayISO();
+    const state = load();
+    const draw = state.lastDraw && state.lastDraw.date === date ? state.lastDraw : buildDraw(date, false);
+    state.lastDraw = draw;
+    save(state);
+
+    // Load custom fields
+    $("customMantras").value = state.customMantras || "";
+    $("customActions").value = state.customActions || "";
+
+    renderDraw(draw);
+    renderStreak();
+    renderJournal();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
