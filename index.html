@@ -1,892 +1,111 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0b0c10" />
-  <title>Kindling — Pagan Motivation</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  
-  <style>
-    /* Black Stag Inn-inspired "public-facing" skin: dark stone + warm parchment + copper */
-    :root{
-      --bg:#07090c;            /* near-black stone */
-      --bg2:#0b0f14;           /* subtle lift for sticky header */
-      --card:#0f141c;          /* deep slate */
-      --card2:#111a24;         /* slightly brighter panels */
-      --muted:#b7a88b;         /* parchment-muted */
-      --text:#f2ead8;          /* warm ivory */
-      --line:#2a2f36;          /* iron line */
-      --accent:#b87333;        /* copper */
-      --accent2:#caa36a;       /* aged gold */
-      --ok:#6fe3b1;
-      --warn:#ffcc66;
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kindling</title>
 
-      --serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
-      --sans: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-      --radius: 16px;
-    }
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0f14">
 
-    /* Optional: load serif when online. Offline falls back gracefully. */
-    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap");
-
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--sans);
-      color:var(--text);
-      background:
-        radial-gradient(1200px 700px at 20% 0%, rgba(184,115,51,.08), transparent 60%),
-        radial-gradient(900px 600px at 80% 10%, rgba(202,163,106,.06), transparent 55%),
-        linear-gradient(180deg, var(--bg), #050608 70%);
-    }
-
-    header{
-      padding:18px 16px 14px;
-      border-bottom:1px solid rgba(202,163,106,.16);
-      position:sticky; top:0;
-      background:rgba(11,15,20,.92);
-      backdrop-filter:blur(10px);
-      z-index:10;
-    }
-    h1{
-      margin:0;
-      font-family:var(--serif);
-      font-size:22px;
-      letter-spacing:.6px;
-      font-weight:700;
-    }
-    .sub{
-      margin-top:6px;
-      font-size:12px;
-      color:rgba(242,234,216,.75);
-      max-width:900px;
-    }
-
-    main{
-      padding:18px 16px 22px;
-      max-width:980px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:1fr;
-      gap:14px;
-    }
-    @media (min-width: 980px){
-      main{grid-template-columns:1.15fr .85fr;}
-    }
-
-    .card{
-      background:
-        radial-gradient(500px 280px at 20% 0%, rgba(184,115,51,.06), transparent 60%),
-        linear-gradient(180deg, rgba(17,26,36,.85), rgba(15,20,28,.95));
-      border:1px solid rgba(202,163,106,.18);
-      border-radius:var(--radius);
-      padding:16px;
-      box-shadow:
-        0 10px 30px rgba(0,0,0,.45),
-        inset 0 1px 0 rgba(242,234,216,.06);
-    }
-
-    .tag{
-      font-size:12px;
-      padding:5px 10px;
-      border-radius:999px;
-      border:1px solid rgba(202,163,106,.22);
-      color:rgba(242,234,216,.78);
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      background:rgba(7,9,12,.55);
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-
-    button,input,select,textarea{
-      width:100%;
-      box-sizing:border-box;
-      border-radius:14px;
-      border:1px solid rgba(202,163,106,.22);
-      background:rgba(7,9,12,.55);
-      color:var(--text);
-      padding:11px 12px;
-      font-size:14px;
-    }
-    textarea{min-height:74px;resize:vertical;}
-
-    button{
-      cursor:pointer;
-      background:rgba(17,26,36,.8);
-      transition:transform .04s ease, border-color .12s ease, background .12s ease;
-    }
-    button:active{transform:translateY(1px);}
-
-    button.primary{
-      background:linear-gradient(180deg, rgba(184,115,51,.98), rgba(148,83,30,.98));
-      border-color:rgba(202,163,106,.65);
-      color:#140a02;
-      font-weight:700;
-    }
-    button.primary:hover{
-      background:linear-gradient(180deg, rgba(202,163,106,.98), rgba(184,115,51,.98));
-    }
-
-    button.ghost{
-      background:rgba(7,9,12,.35);
-      border-color:rgba(202,163,106,.18);
-    }
-
-    .grid{display:grid;grid-template-columns:1fr;gap:10px;}
-    @media (min-width: 560px){ .grid{grid-template-columns:1fr 1fr;} }
-
-    .big{
-      font-family:var(--serif);
-      font-size:22px;
-      font-weight:700;
-      line-height:1.22;
-      margin:12px 0 8px;
-      letter-spacing:.3px;
-    }
-    .muted{color:rgba(242,234,216,.70);font-size:12px;}
-
-    .hr{border:none;border-top:1px solid rgba(202,163,106,.16);margin:14px 0;}
-
-    .pill{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:9px 11px;
-      border-radius:999px;
-      border:1px solid rgba(202,163,106,.20);
-      background:rgba(7,9,12,.45);
-      color:rgba(242,234,216,.78);
-      font-size:12px;
-    }
-    .ok{color:var(--ok);} .warn{color:var(--warn);}
-
-    .list{display:flex;flex-direction:column;gap:8px;}
-
-    .item{
-      padding:11px 12px;
-      border:1px solid rgba(202,163,106,.18);
-      background:rgba(7,9,12,.45);
-      border-radius:14px;
-    }
-    .item .t{
-      font-family:var(--serif);
-      font-weight:700;
-      margin-bottom:4px;
-      letter-spacing:.2px;
-    }
-    .item .d{font-size:12px;color:rgba(242,234,216,.72);line-height:1.45;}
-
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-    .tab{
-      padding:8px 11px;
-      border-radius:999px;
-      border:1px solid rgba(202,163,106,.18);
-      background:rgba(7,9,12,.40);
-      color:rgba(242,234,216,.72);
-      cursor:pointer;
-      user-select:none;
-      font-size:12px;
-    }
-    .tab.active{
-      border-color:rgba(202,163,106,.55);
-      color:var(--text);
-      background:rgba(184,115,51,.18);
-    }
-
-    .hidden{display:none;}
-    a{color:var(--accent2);text-decoration:none;}
-    a:hover{text-decoration:underline;}
-  </style>
-
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-<header>
-  <h1>Kindling</h1>
-  <div class="sub">Pagan motivation, discipline, and quiet power — offline-first. No accounts. Stored on your device.</div>
+<main class="wrap">
+<header class="top">
+<div class="brand">
+<h1>Kindling</h1>
+<p class="sub">
+Pagan motivation, discipline, and quiet power — offline-first.
+<span class="dim">No accounts. Stored on your device.</span>
+</p>
+</div>
 </header>
 
-<main>
-  <section class="card">
-    <div class="row">
-      <div>
-        <span class="tag">Daily Rite</span>
-        <div class="muted" id="todayLine">—</div>
-      </div>
-      <div class="row" style="gap:8px;justify-content:flex-end;">
-        <button class="ghost" id="refreshBtn" style="width:auto;">New draw</button>
-        <button id="pinBtn" style="width:auto;">Pin</button>
-      </div>
-    </div>
+<section class="panel">
+<div class="row headrow">
+<div class="datebox">
+<div class="label">Today</div>
+<div id="today" class="value">—</div>
+</div>
 
-    <div class="big" id="headline">—</div>
-    <div class="muted" id="subline">—</div>
+<div class="datebox">
+<div class="label">Draw ID</div>
+<div id="drawId" class="value mono">—</div>
+</div>
+</div>
 
-    <div class="hr"></div>
+<div class="divider"></div>
 
-    <div class="grid">
-      <div class="item">
-        <div class="t">Element</div>
-        <div class="d" id="elementText">—</div>
-      </div>
-      <div class="item">
-        <div class="t">Micro‑action (wealth + stability)</div>
-        <div class="d" id="actionText">—</div>
-      </div>
-      <div class="item">
-        <div class="t">Boundary (protect the hearth)</div>
-        <div class="d" id="boundaryText">—</div>
-      </div>
-      <div class="item">
-        <div class="t">Mantra</div>
-        <div class="d" id="mantraText">—</div>
-      </div>
-      <div class="item">
-        <div class="t">Workout (30 min)</div>
-        <div class="d" id="workoutText">—</div>
-      </div>
-    </div>
+<div class="card">
+<div class="cardTitle">Element</div>
+<div id="kindlingElement" class="cardValue">—</div>
+</div>
 
-    <div class="hr"></div>
+<div class="card">
+<div class="cardTitle">Micro-action (wealth + stability)</div>
+<div id="kindlingMicro" class="cardValue">—</div>
+</div>
 
-    <div class="row" style="justify-content:space-between; flex-wrap:wrap; gap:10px;">
-      <span class="pill">Hearth: <span id="hearthStatus" class="ok">Cold</span></span>
-      <span class="pill">Season: <span id="seasonLabel" class="ok">—</span></span>
-      <span class="pill">Streak: <span id="streakNum" class="ok">0</span> days</span>
-      <button class="primary" id="completeBtn" style="width:auto;">Mark complete</button>
-    </div>
+<div class="card">
+<div class="cardTitle">Boundary (protect the hearth)</div>
+<div id="kindlingBoundary" class="cardValue">—</div>
+</div>
 
-    <div class="muted" style="margin-top:10px;">
-      Tip: “complete” means you did the micro‑action OR consciously held the boundary. Perfection is not the point. Continuity is.
-    </div>
-  </section>
+<div class="card">
+<div class="cardTitle">Mantra</div>
+<div id="kindlingMantra" class="cardValue">—</div>
+</div>
 
-  <aside class="card">
-    <div class="tabs">
-      <div class="tab active" data-tab="journal">Journal</div>
-      <div class="tab" data-tab="custom">Custom</div>
-      <div class="tab" data-tab="backup">Backup</div>
-      <div class="tab" data-tab="reminders">Reminders</div>
-    </div>
+<div class="card">
+<div class="cardTitle">Workout (30 min)</div>
+<div id="kindlingWorkout" class="cardValue">—</div>
+</div>
 
-    <div id="tab-journal">
-      <span class="tag">One‑line journal</span>
-      <div class="muted" style="margin-top:6px;">Write one sentence. That’s enough to keep your mind honest.</div>
-      <div style="margin-top:10px;">
-        <textarea id="journalInput" placeholder="What did I do today that strengthens the hearth?"></textarea>
-        <div class="row" style="justify-content:flex-end;margin-top:10px;">
-          <button class="primary" id="saveJournalBtn" style="width:auto;">Save</button>
-        </div>
-      </div>
-      <div class="hr"></div>
-      <span class="tag">Recent</span>
-      <div class="list" style="margin-top:10px;" id="journalList"></div>
-    </div>
+<div class="divider"></div>
 
-    <div id="tab-custom" class="hidden">
-      <span class="tag">Customize</span>
-      <div class="muted" style="margin-top:6px;">Add your own mantras and actions. The app will mix them into draws.</div>
-      <div class="hr"></div>
+<div class="row footrow">
+<div class="pill">
+<span class="pillLabel">Hearth:</span>
+<span id="hearthState" class="pillValue">—</span>
+</div>
 
-      <label class="muted">Your mantras (one per line)</label>
-      <textarea id="customMantras" placeholder="Example: I keep the covenant with my future self."></textarea>
+<div class="pill">
+<span class="pillLabel">Season:</span>
+<span id="season" class="pillValue">—</span>
+</div>
 
-      <div class="hr"></div>
+<div class="pill">
+<span class="pillLabel">Streak:</span>
+<span id="streak" class="pillValue">0</span>
+<span class="pillLabel">days</span>
+</div>
 
-      <label class="muted">Your micro-actions (one per line)</label>
-      <textarea id="customActions" placeholder="Example: Export bucket ledger JSON backup."></textarea>
+<button id="markComplete" class="btn">Mark complete</button>
+</div>
 
-      <div class="row" style="margin-top:10px;justify-content:flex-end;">
-        <button class="primary" id="saveCustomBtn" style="width:auto;">Save</button>
-      </div>
+<p class="tip">
+Tip: <span class="quote">“complete”</span> means you did the micro-action <em>or</em>
+consciously held the boundary. Perfection is not the point. Continuity is.
+</p>
 
-      <div class="muted" style="margin-top:10px;">
-        Pro move: add 10–20 actions that directly increase cash flow, credit strength, or reduce risk.
-      </div>
-    </div>
+<div class="row actions">
+<button id="redraw" class="btn ghost" title="Admin: redraw today (resets today only)">
+Redraw today
+</button>
+<button id="resetAll" class="btn ghost" title="Danger: clears streak + history">
+Reset all
+</button>
+</div>
 
-    
-      <div class="hr"></div>
-
-      <span class="tag">Modes</span>
-      <div class="row" style="margin-top:10px; gap:10px; align-items:center;">
-        <label class="pill" style="display:flex; gap:8px; align-items:center;">
-          <input type="checkbox" id="wealthModeChk" />
-          <span>Wealth‑linked micro‑actions</span>
-        </label>
-        <label class="pill" style="display:flex; gap:8px; align-items:center;">
-          <input type="checkbox" id="workoutModeChk" checked />
-          <span>Include 30‑min workout prompt</span>
-        </label>
-      </div>
-
-      <div class="hr"></div>
-
-      <span class="tag">Personal Laws (max 5)</span>
-      <div class="muted" style="margin-top:6px;">These are your rules. The app will surface one each day.</div>
-      <div style="margin-top:10px;">
-        <div class="row" style="gap:10px;">
-          <input id="lawInput" placeholder="Add a law (e.g., No money moves without a rule)." />
-          <button class="ghost" id="addLawBtn" style="width:auto;">Add</button>
-        </div>
-        <div id="lawList" style="margin-top:10px;"></div>
-      </div>
-
-
-    <div id="tab-backup" class="hidden">
-      <span class="tag">Backup</span>
-      <div class="muted" style="margin-top:6px;">This app stores data locally. Export monthly.</div>
-      <div class="hr"></div>
-      <div class="row" style="gap:8px;justify-content:flex-start;">
-        <button id="exportBtn" style="width:auto;">Export JSON</button>
-        <label class="pill" style="cursor:pointer;">
-          Import JSON
-          <input id="importFile" type="file" accept="application/json" style="display:none;">
-        </label>
-      </div>
-      <div class="muted" style="margin-top:10px;">
-        iPhone note: clearing Safari website data will wipe local storage. Backup is sovereignty.
-      </div>
-    </div>
-  
-    <div id="tab-reminders" class="hidden">
-      <span class="tag">8:00 AM reminder</span>
-      <div class="muted" style="margin-top:6px;">
-        Web apps can’t reliably “push” a daily phone notification by themselves without a push server.
-        The clean workaround: import a recurring calendar reminder (or use iPhone Shortcuts).
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="item" style="margin-bottom:10px;">
-        <div class="t">Option 1 — Calendar reminder (recommended)</div>
-        <div class="muted">Download a recurring 8:00 AM event you can set to alert you.</div>
-        <button class="ghost" id="icsBtn" style="margin-top:10px;">Download 8:00 AM reminder</button>
-      </div>
-
-      <div class="item">
-        <div class="t">Option 2 — iPhone Shortcuts</div>
-        <div class="muted">Create an automation: At 8:00 AM → Show notification “Kindling: tend the hearth.”</div>
-      </div>
-    </div>
-
-  </aside>
+<p class="small dim">
+Offline-first. Nothing leaves this device. Your calendar can be the bell; Kindling is the hearth.
+</p>
+</section>
 </main>
 
-<script>
-(() => {
-  const KEY = "kindling_v1";
-  const $ = (id) => document.getElementById(id);
-
-  const defaultMantras = [
-    "I tend the hearth before I chase the horizon.",
-    "Small offerings, made daily, become power.",
-    "My discipline is my protection.",
-    "I do not bargain with my future.",
-    "I choose clarity over comfort.",
-    "I keep my word to myself.",
-  ];
-
-  const defaultActions = [
-    "Move $5–$20 toward the Emergency Buffer. (If already funded, invest it.)",
-    "Review bills due in the next 7 days and confirm autopay is set.",
-    "Make one debt‑reducing move: extra $5–$25 or a due‑date check.",
-    "Log today’s paycheck and allocate buckets (one minute, no drama).",
-    "Delete one useless subscription or renegotiate one recurring bill.",
-    "Do a 10‑minute “cash leak” sweep: fees, impulse spends, forgotten trials.",
-    "Send Donna receipt reminder / log Jeep escrow movement (if applicable).",
-    "Back up your financial ledger JSON to iCloud (monthly cadence).",
-  ];
-
-
-  const wealthActions = [
-    "Reconcile all buckets: bank + Cash App + Acorns + Betterment. One number each.",
-    "Set/confirm autopay for the next bill due (or schedule it).",
-    "Move $10 into Emergency Buffer (or into Betterment Cash Reserve).",
-    "Review upcoming 7 days: bills, fuel, groceries. Decide in writing what gets paid.",
-    "Check credit: any new collections/late marks? If yes, schedule one dispute/call.",
-    "No impulse buys today. Write it down, wait 24 hours.",
-    "Automate one thing: transfer, bill pay, or a recurring savings move.",
-    "Update the Jeep ledger: record Donna’s payment + remaining balance.",
-  ];
-
-  const workoutPrompts = [
-    "30‑min brisk walk. No phone scrolling. Just breath + stride.",
-    "30‑min strength circuit: squats, push‑ups (knees ok), rows (band), planks.",
-    "30‑min mobility: hips, spine, shoulders. Move like you’re oiling armor.",
-    "30‑min incline walk or stairs. Steady effort, nasal breathing if possible.",
-    "30‑min bodyweight: lunges, glute bridges, dead bugs, side planks.",
-    "30‑min light jog / fast walk intervals: 2 min easy, 1 min faster, repeat.",
-  ];
-
-  function seasonFor(dateObj){
-    const m = dateObj.getMonth()+1;
-    if (m===12 || m===1 || m===2) return {name:"Winter", accent:"#b07b3a", focus:"Rest, planning, and quiet power."};
-    if (m>=3 && m<=5) return {name:"Spring", accent:"#9b7a3a", focus:"Growth, clearing, and new systems."};
-    if (m>=6 && m<=8) return {name:"Summer", accent:"#c08a3a", focus:"Execution, heat, and harvest of effort."};
-    return {name:"Autumn", accent:"#a16b3a", focus:"Pruning, storage, and sharpening the blade."};
-  }
-
-  function hearthState(state, todayStr){
-    // "Lit" if completed today, "Ember" if completed yesterday, else "Cold"
-    if (!state || !state.completions || !state.completions.length) return {label:"Cold", cls:"bad"};
-    const last = state.completions[state.completions.length-1];
-    if (last === todayStr) return {label:"Lit", cls:"ok"};
-    const d0 = new Date(todayStr+"T00:00:00");
-    const d1 = new Date(last+"T00:00:00");
-    const diff = Math.round((d0-d1)/(1000*60*60*24));
-    if (diff===1) return {label:"Ember", cls:"warn"};
-    return {label:"Cold", cls:"bad"};
-  }
-
-  function buildICS(){
-    // Recurring daily event at 08:00 local time (floating), with 1 notification at event time.
-    const dtStart = new Date();
-    // set to next 8am
-    dtStart.setHours(8,0,0,0);
-    if (dtStart < new Date()) dtStart.setDate(dtStart.getDate()+1);
-    const pad = (n)=>String(n).padStart(2,'0');
-    const fmt = (d)=> d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
-    const uid = "kindling-8am-"+Math.random().toString(16).slice(2)+"@local";
-    const lines = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//Kindling//EN",
-      "CALSCALE:GREGORIAN",
-      "BEGIN:VEVENT",
-      "UID:"+uid,
-      "DTSTAMP:"+fmt(new Date()),
-      "DTSTART:"+fmt(dtStart),
-      "RRULE:FREQ=DAILY",
-      "SUMMARY:Kindling — tend the hearth",
-      "DESCRIPTION:Open Kindling and do the Daily Rite (one sentence + one small action).",
-      "BEGIN:VALARM",
-      "TRIGGER:PT0M",
-      "ACTION:DISPLAY",
-      "DESCRIPTION:Kindling — tend the hearth",
-      "END:VALARM",
-      "END:VEVENT",
-      "END:VCALENDAR"
-    ];
-    return lines.join("\r\n");
-  }
-
-
-  const elements = [
-    { name:"Earth",  theme:"Stability, cash reserves, shelter, the long game.", focus:"Add weight to your foundations." },
-    { name:"Fire",   theme:"Action, will, decisive cuts, debt kills.", focus:"Burn what weakens you." },
-    { name:"Water",  theme:"Flow, budgets, routing, habit, endurance.", focus:"Redirect the river, not the rocks." },
-    { name:"Air",    theme:"Clarity, planning, language, boundaries.", focus:"Name the rule and obey it." },
-  ];
-
-  const boundaries = [
-    "No money moves without a rule. Impulse is a tax.",
-    "No discretionary spending from Bills Spine.",
-    "No borrowing from investing buckets — ever.",
-    "One job per account. Mixed offerings create chaos.",
-    "If it isn’t written down, it doesn’t exist.",
-    "Protect sleep and health; burnout is financial sabotage.",
-  ];
-
-  const headlines = [
-    "Kindle the next season.",
-    "Hold the boundary. Win the week.",
-    "Offer a small act. Keep the covenant.",
-    "Turn worry into one move.",
-    "Build leverage. Reduce risk.",
-    "Make the boring choice. Become unbreakable.",
-  ];
-
-  function load(){
-    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
-  }
-  function save(s){
-    localStorage.setItem(KEY, JSON.stringify(s));
-  }
-  function todayISO(){
-    const d = new Date();
-    const tzOff = d.getTimezoneOffset()*60000;
-    return new Date(d - tzOff).toISOString().slice(0,10);
-  }
-  function seedFromDate(str){
-    // deterministic pseudo-random seed from YYYY-MM-DD
-    let h = 2166136261;
-    for (let i=0;i<str.length;i++){
-      h ^= str.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return (h >>> 0);
-  }
-  function pick(arr, rnd){
-    return arr[Math.floor(rnd()*arr.length)];
-  }
-  function mulberry32(a){
-    return function() {
-      let t = a += 0x6D2B79F5;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    }
-  }
-
-  function getCustomLines(text){
-    return (text || "")
-      .split("\n")
-      .map(s => s.trim())
-      .filter(Boolean)
-      .slice(0, 200);
-  }
-
-  function buildDraw(dateStr, forceNew=false){
-    const state = load();
-    const pinned = state.pinned || null;
-
-    if (pinned && pinned.date === dateStr && !forceNew){
-      return pinned.draw;
-    }
-
-    const customMantras = getCustomLines(state.customMantras);
-    const customActions = getCustomLines(state.customActions);
-    const mantras = defaultMantras.concat(customMantras);
-    const wealthMode = !!state.wealthMode;
-    const workoutMode = (state.workoutMode !== false);
-    const laws = (state.laws || []).slice(0,5).filter(Boolean);
-    const actions = (wealthMode ? wealthActions : defaultActions).concat(customActions);
-
-    const seed = seedFromDate(dateStr + (forceNew ? ("#" + Date.now()) : ""));
-    const rnd = mulberry32(seed);
-
-    const el = pick(elements, rnd);
-    const h = pick(headlines, rnd);
-    const b = pick(boundaries, rnd);
-    const m = pick(mantras, rnd);
-    const a = pick(actions, rnd);
-
-    const season = seasonFor(new Date(dateStr+"T00:00:00"));
-
-    const w = workoutMode ? pick(workoutPrompts, rnd) : null;
-    const law = laws.length ? pick(laws, rnd) : null;
-
-    return { date: dateStr, headline: h, subline: el.theme, element: el, boundary: b, mantra: m, action: a, workout: w, law: law, season: season };
-  }
-
-    function renderDraw(draw){
-    $("today").textContent = `Today: ${draw.date}`;
-    $("headline").textContent = draw.headline;
-    $("subline").textContent = draw.subline;
-    $("elementText").textContent = `${draw.element.name} — ${draw.element.focus}`;
-    $("actionText").textContent = draw.action;
-    $("boundaryText").textContent = draw.law ? `${draw.boundary}  •  Law: ${draw.law}` : draw.boundary;
-    $("mantraText").textContent = draw.mantra;
-    $("workoutText").textContent = draw.workout || "—";
-    // Seasonal accent (subtle shift)
-    if (draw.season && draw.season.accent){
-      document.documentElement.style.setProperty("--accent", draw.season.accent);
-      $("seasonLabel").textContent = draw.season.name;
-      $("subline").textContent = draw.season.focus;
-    }
-  }
-
-  function streakCount(state){
-    const done = state.doneDays || {};
-    const today = todayISO();
-    // Count consecutive days ending today or yesterday if today not marked yet
-    const isDone = (d) => !!done[d];
-    const start = isDone(today) ? today : (() => {
-      const dt = new Date(today+"T00:00:00");
-      dt.setDate(dt.getDate()-1);
-      return dt.toISOString().slice(0,10);
-    })();
-
-    let count = 0;
-    let dt = new Date(start+"T00:00:00");
-    while (true){
-      const k = dt.toISOString().slice(0,10);
-      if (!isDone(k)) break;
-      count += 1;
-      dt.setDate(dt.getDate()-1);
-    }
-    return count;
-  }
-
-    function renderStreak(){
-    const state = load();
-    const today = todayISO();
-    $("streakNum").textContent = String(streakCount(state));
-    const hs = hearthState(state, today);
-    const el = $("hearthStatus");
-    el.textContent = hs.label;
-    el.classList.remove("ok","warn","bad");
-    el.classList.add(hs.cls);
-  }
-
-  function addJournalEntry(text){
-    const state = load();
-    const date = todayISO();
-    state.journal = state.journal || [];
-    state.journal.unshift({ date, text: text.trim() });
-    state.journal = state.journal.slice(0, 30);
-    save(state);
-    renderJournal();
-  }
-
-  function renderJournal(){
-    const state = load();
-    const list = $("journalList");
-    list.innerHTML = "";
-    const entries = (state.journal || []).slice(0, 12);
-
-    if (!entries.length){
-      const div = document.createElement("div");
-      div.className = "muted";
-      div.textContent = "No entries yet. One sentence a day is enough.";
-      list.appendChild(div);
-      return;
-    }
-
-    for (const e of entries){
-      const item = document.createElement("div");
-      item.className = "item";
-      item.innerHTML = `<div class="t">${e.date}</div><div class="d">${escapeHtml(e.text)}</div>`;
-      list.appendChild(item);
-    }
-  }
-
-  function escapeHtml(s){
-    return String(s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-  }
-
-  // Tabs
-  document.querySelectorAll(".tab").forEach(t=>{
-    t.addEventListener("click", ()=>{
-      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-      t.classList.add("active");
-      const tab = t.dataset.tab;
-      ["journal","custom","backup"].forEach(k=>{
-        document.getElementById("tab-"+k).classList.toggle("hidden", k !== tab);
-      });
-    }, {passive:true});
-  });
-
-  // Buttons
-  $("refreshBtn").addEventListener("click", ()=>{
-    const date = todayISO();
-    const draw = buildDraw(date, true);
-    const state = load();
-    state.lastDraw = draw;
-    // If pinned for today, update pinned too (user explicitly asked for new draw)
-    if (state.pinned && state.pinned.date === date){
-      state.pinned.draw = draw;
-    }
-    save(state);
-    renderDraw(draw);
-  });
-
-  $("pinBtn").addEventListener("click", ()=>{
-    const state = load();
-    const date = todayISO();
-    const draw = buildDraw(date, false);
-    state.pinned = { date, draw };
-    save(state);
-    $("pinBtn").textContent = "Pinned";
-    setTimeout(()=> $("pinBtn").textContent = "Pin", 1200);
-  });
-
-  $("completeBtn").addEventListener("click", ()=>{
-    const state = load();
-    const date = todayISO();
-    state.doneDays = state.doneDays || {};
-    state.doneDays[date] = true;
-    save(state);
-    renderStreak();
-    $("completeBtn").textContent = "Done ✓";
-    setTimeout(()=> $("completeBtn").textContent = "Mark complete", 1200);
-  });
-
-  $("saveJournalBtn").addEventListener("click", ()=>{
-    const text = $("journalInput").value;
-    if (!text.trim()) return;
-    addJournalEntry(text);
-    $("journalInput").value = "";
-  });
-
-  $("saveCustomBtn").addEventListener("click", ()=>{
-    const state = load();
-    state.customMantras = $("customMantras").value || "";
-    state.customActions = $("customActions").value || "";
-    save(state);
-    $("saveCustomBtn").textContent = "Saved ✓";
-    setTimeout(()=> $("saveCustomBtn").textContent = "Save", 1200);
-  });
-
-
-  function renderModesAndLaws(){
-    const state = load();
-    const wealthEl = $("wealthModeChk");
-    const workoutEl = $("workoutModeChk");
-    if (wealthEl) wealthEl.checked = !!state.wealthMode;
-    if (workoutEl) workoutEl.checked = (state.workoutMode !== false);
-
-    const laws = (state.laws || []).slice(0,5).filter(Boolean);
-    const wrap = $("lawList");
-    if (!wrap) return;
-    wrap.innerHTML = "";
-    if (!laws.length){
-      const div = document.createElement("div");
-      div.className = "muted";
-      div.textContent = "No laws yet. Add 1–5. Short. Sharp. True.";
-      wrap.appendChild(div);
-      return;
-    }
-    laws.forEach((law, idx)=>{
-      const row = document.createElement("div");
-      row.className = "row";
-      row.style.justifyContent = "space-between";
-      row.style.alignItems = "center";
-      row.style.marginBottom = "8px";
-
-      const left = document.createElement("div");
-      left.className = "pill";
-      left.style.flex = "1";
-      left.style.whiteSpace = "normal";
-      left.textContent = law;
-
-      const del = document.createElement("button");
-      del.className = "ghost";
-      del.style.width = "auto";
-      del.textContent = "Remove";
-      del.addEventListener("click", ()=>{
-        const st = load();
-        const arr = (st.laws || []).slice(0,5).filter(Boolean);
-        arr.splice(idx,1);
-        st.laws = arr;
-        save(st);
-        renderModesAndLaws();
-        init();
-      });
-
-      row.appendChild(left);
-      row.appendChild(del);
-      wrap.appendChild(row);
-    });
-  }
-
-  function wireModesAndLaws(){
-    const wealthEl = $("wealthModeChk");
-    const workoutEl = $("workoutModeChk");
-    if (wealthEl){
-      wealthEl.addEventListener("change", ()=>{
-        const state = load();
-        state.wealthMode = $("wealthModeChk").checked;
-        save(state);
-        init();
-      });
-    }
-    if (workoutEl){
-      workoutEl.addEventListener("change", ()=>{
-        const state = load();
-        state.workoutMode = $("workoutModeChk").checked;
-        save(state);
-        init();
-      });
-    }
-
-    const addBtn = $("addLawBtn");
-    if (addBtn){
-      addBtn.addEventListener("click", ()=>{
-        const val = $("lawInput").value.trim();
-        if (!val) return;
-        const state = load();
-        const laws = (state.laws || []).slice(0,5).filter(Boolean);
-        if (laws.length >= 5) { alert("Max 5 laws. Remove one first."); return; }
-        laws.push(val);
-        state.laws = laws;
-        save(state);
-        $("lawInput").value = "";
-        renderModesAndLaws();
-        init();
-      });
-    }
-
-    const icsBtn = $("icsBtn");
-    if (icsBtn){
-      icsBtn.addEventListener("click", ()=>{
-        const ics = buildICS();
-        const blob = new Blob([ics], {type:"text/calendar"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "Kindling-8am-reminder.ics";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      });
-    }
-  }
-
-
-  $("exportBtn").addEventListener("click", ()=>{
-    const state = load();
-    const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "kindling-backup.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-
-  $("importFile").addEventListener("change", async (ev)=>{
-    const file = ev.target.files && ev.target.files[0];
-    if (!file) return;
-    try{
-      const text = await file.text();
-      const obj = JSON.parse(text);
-      localStorage.setItem(KEY, JSON.stringify(obj));
-      init();
-      alert("Imported. Reloaded Kindling.");
-    }catch{
-      alert("Import failed. Make sure it is a Kindling JSON backup.");
-    }finally{
-      ev.target.value = "";
-    }
-  });
-
-  // Service worker (offline)
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  }
-
-  function init(){
-    const date = todayISO();
-    const state = load();
-    const draw = state.lastDraw && state.lastDraw.date === date ? state.lastDraw : buildDraw(date, false);
-    state.lastDraw = draw;
-    save(state);
-
-    // Load custom fields
-    $("customMantras").value = state.customMantras || "";
-    $("customActions").value = state.customActions || "";
-
-    renderDraw(draw);
-    renderStreak();
-
-    wireModesAndLaws();
-    renderModesAndLaws();
-    renderJournal();
-  }
-
-  init();
-})();
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
