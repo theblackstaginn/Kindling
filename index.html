@@ -249,11 +249,17 @@
         <div class="t">Mantra</div>
         <div class="d" id="mantraText">—</div>
       </div>
+      <div class="item">
+        <div class="t">Workout (30 min)</div>
+        <div class="d" id="workoutText">—</div>
+      </div>
     </div>
 
     <div class="hr"></div>
 
-    <div class="row" style="justify-content:space-between;">
+    <div class="row" style="justify-content:space-between; flex-wrap:wrap; gap:10px;">
+      <span class="pill">Hearth: <span id="hearthStatus" class="ok">Cold</span></span>
+      <span class="pill">Season: <span id="seasonLabel" class="ok">—</span></span>
       <span class="pill">Streak: <span id="streakNum" class="ok">0</span> days</span>
       <button class="primary" id="completeBtn" style="width:auto;">Mark complete</button>
     </div>
@@ -268,6 +274,7 @@
       <div class="tab active" data-tab="journal">Journal</div>
       <div class="tab" data-tab="custom">Custom</div>
       <div class="tab" data-tab="backup">Backup</div>
+      <div class="tab" data-tab="reminders">Reminders</div>
     </div>
 
     <div id="tab-journal">
@@ -306,6 +313,34 @@
       </div>
     </div>
 
+    
+      <div class="hr"></div>
+
+      <span class="tag">Modes</span>
+      <div class="row" style="margin-top:10px; gap:10px; align-items:center;">
+        <label class="pill" style="display:flex; gap:8px; align-items:center;">
+          <input type="checkbox" id="wealthModeChk" />
+          <span>Wealth‑linked micro‑actions</span>
+        </label>
+        <label class="pill" style="display:flex; gap:8px; align-items:center;">
+          <input type="checkbox" id="workoutModeChk" checked />
+          <span>Include 30‑min workout prompt</span>
+        </label>
+      </div>
+
+      <div class="hr"></div>
+
+      <span class="tag">Personal Laws (max 5)</span>
+      <div class="muted" style="margin-top:6px;">These are your rules. The app will surface one each day.</div>
+      <div style="margin-top:10px;">
+        <div class="row" style="gap:10px;">
+          <input id="lawInput" placeholder="Add a law (e.g., No money moves without a rule)." />
+          <button class="ghost" id="addLawBtn" style="width:auto;">Add</button>
+        </div>
+        <div id="lawList" style="margin-top:10px;"></div>
+      </div>
+
+
     <div id="tab-backup" class="hidden">
       <span class="tag">Backup</span>
       <div class="muted" style="margin-top:6px;">This app stores data locally. Export monthly.</div>
@@ -321,6 +356,28 @@
         iPhone note: clearing Safari website data will wipe local storage. Backup is sovereignty.
       </div>
     </div>
+  
+    <div id="tab-reminders" class="hidden">
+      <span class="tag">8:00 AM reminder</span>
+      <div class="muted" style="margin-top:6px;">
+        Web apps can’t reliably “push” a daily phone notification by themselves without a push server.
+        The clean workaround: import a recurring calendar reminder (or use iPhone Shortcuts).
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="item" style="margin-bottom:10px;">
+        <div class="t">Option 1 — Calendar reminder (recommended)</div>
+        <div class="muted">Download a recurring 8:00 AM event you can set to alert you.</div>
+        <button class="ghost" id="icsBtn" style="margin-top:10px;">Download 8:00 AM reminder</button>
+      </div>
+
+      <div class="item">
+        <div class="t">Option 2 — iPhone Shortcuts</div>
+        <div class="muted">Create an automation: At 8:00 AM → Show notification “Kindling: tend the hearth.”</div>
+      </div>
+    </div>
+
   </aside>
 </main>
 
@@ -348,6 +405,80 @@
     "Send Donna receipt reminder / log Jeep escrow movement (if applicable).",
     "Back up your financial ledger JSON to iCloud (monthly cadence).",
   ];
+
+
+  const wealthActions = [
+    "Reconcile all buckets: bank + Cash App + Acorns + Betterment. One number each.",
+    "Set/confirm autopay for the next bill due (or schedule it).",
+    "Move $10 into Emergency Buffer (or into Betterment Cash Reserve).",
+    "Review upcoming 7 days: bills, fuel, groceries. Decide in writing what gets paid.",
+    "Check credit: any new collections/late marks? If yes, schedule one dispute/call.",
+    "No impulse buys today. Write it down, wait 24 hours.",
+    "Automate one thing: transfer, bill pay, or a recurring savings move.",
+    "Update the Jeep ledger: record Donna’s payment + remaining balance.",
+  ];
+
+  const workoutPrompts = [
+    "30‑min brisk walk. No phone scrolling. Just breath + stride.",
+    "30‑min strength circuit: squats, push‑ups (knees ok), rows (band), planks.",
+    "30‑min mobility: hips, spine, shoulders. Move like you’re oiling armor.",
+    "30‑min incline walk or stairs. Steady effort, nasal breathing if possible.",
+    "30‑min bodyweight: lunges, glute bridges, dead bugs, side planks.",
+    "30‑min light jog / fast walk intervals: 2 min easy, 1 min faster, repeat.",
+  ];
+
+  function seasonFor(dateObj){
+    const m = dateObj.getMonth()+1;
+    if (m===12 || m===1 || m===2) return {name:"Winter", accent:"#b07b3a", focus:"Rest, planning, and quiet power."};
+    if (m>=3 && m<=5) return {name:"Spring", accent:"#9b7a3a", focus:"Growth, clearing, and new systems."};
+    if (m>=6 && m<=8) return {name:"Summer", accent:"#c08a3a", focus:"Execution, heat, and harvest of effort."};
+    return {name:"Autumn", accent:"#a16b3a", focus:"Pruning, storage, and sharpening the blade."};
+  }
+
+  function hearthState(state, todayStr){
+    // "Lit" if completed today, "Ember" if completed yesterday, else "Cold"
+    if (!state || !state.completions || !state.completions.length) return {label:"Cold", cls:"bad"};
+    const last = state.completions[state.completions.length-1];
+    if (last === todayStr) return {label:"Lit", cls:"ok"};
+    const d0 = new Date(todayStr+"T00:00:00");
+    const d1 = new Date(last+"T00:00:00");
+    const diff = Math.round((d0-d1)/(1000*60*60*24));
+    if (diff===1) return {label:"Ember", cls:"warn"};
+    return {label:"Cold", cls:"bad"};
+  }
+
+  function buildICS(){
+    // Recurring daily event at 08:00 local time (floating), with 1 notification at event time.
+    const dtStart = new Date();
+    // set to next 8am
+    dtStart.setHours(8,0,0,0);
+    if (dtStart < new Date()) dtStart.setDate(dtStart.getDate()+1);
+    const pad = (n)=>String(n).padStart(2,'0');
+    const fmt = (d)=> d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+"T"+pad(d.getHours())+pad(d.getMinutes())+"00";
+    const uid = "kindling-8am-"+Math.random().toString(16).slice(2)+"@local";
+    const lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Kindling//EN",
+      "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:"+uid,
+      "DTSTAMP:"+fmt(new Date()),
+      "DTSTART:"+fmt(dtStart),
+      "RRULE:FREQ=DAILY",
+      "SUMMARY:Kindling — tend the hearth",
+      "DESCRIPTION:Open Kindling and do the Daily Rite (one sentence + one small action).",
+      "BEGIN:VALARM",
+      "TRIGGER:PT0M",
+      "ACTION:DISPLAY",
+      "DESCRIPTION:Kindling — tend the hearth",
+      "END:VALARM",
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ];
+    return lines.join("\r\n");
+  }
+
 
   const elements = [
     { name:"Earth",  theme:"Stability, cash reserves, shelter, the long game.", focus:"Add weight to your foundations." },
@@ -425,7 +556,10 @@
     const customMantras = getCustomLines(state.customMantras);
     const customActions = getCustomLines(state.customActions);
     const mantras = defaultMantras.concat(customMantras);
-    const actions = defaultActions.concat(customActions);
+    const wealthMode = !!state.wealthMode;
+    const workoutMode = (state.workoutMode !== false);
+    const laws = (state.laws || []).slice(0,5).filter(Boolean);
+    const actions = (wealthMode ? wealthActions : defaultActions).concat(customActions);
 
     const seed = seedFromDate(dateStr + (forceNew ? ("#" + Date.now()) : ""));
     const rnd = mulberry32(seed);
@@ -436,17 +570,29 @@
     const m = pick(mantras, rnd);
     const a = pick(actions, rnd);
 
-    return { date: dateStr, headline: h, subline: el.theme, element: el, boundary: b, mantra: m, action: a };
+    const season = seasonFor(new Date(dateStr+"T00:00:00"));
+
+    const w = workoutMode ? pick(workoutPrompts, rnd) : null;
+    const law = laws.length ? pick(laws, rnd) : null;
+
+    return { date: dateStr, headline: h, subline: el.theme, element: el, boundary: b, mantra: m, action: a, workout: w, law: law, season: season };
   }
 
-  function renderDraw(draw){
-    $("todayLine").textContent = `Today: ${draw.date}`;
+    function renderDraw(draw){
+    $("today").textContent = `Today: ${draw.date}`;
     $("headline").textContent = draw.headline;
     $("subline").textContent = draw.subline;
     $("elementText").textContent = `${draw.element.name} — ${draw.element.focus}`;
     $("actionText").textContent = draw.action;
-    $("boundaryText").textContent = draw.boundary;
+    $("boundaryText").textContent = draw.law ? `${draw.boundary}  •  Law: ${draw.law}` : draw.boundary;
     $("mantraText").textContent = draw.mantra;
+    $("workoutText").textContent = draw.workout || "—";
+    // Seasonal accent (subtle shift)
+    if (draw.season && draw.season.accent){
+      document.documentElement.style.setProperty("--accent", draw.season.accent);
+      $("seasonLabel").textContent = draw.season.name;
+      $("subline").textContent = draw.season.focus;
+    }
   }
 
   function streakCount(state){
@@ -471,9 +617,15 @@
     return count;
   }
 
-  function renderStreak(){
+    function renderStreak(){
     const state = load();
+    const today = todayISO();
     $("streakNum").textContent = String(streakCount(state));
+    const hs = hearthState(state, today);
+    const el = $("hearthStatus");
+    el.textContent = hs.label;
+    el.classList.remove("ok","warn","bad");
+    el.classList.add(hs.cls);
   }
 
   function addJournalEntry(text){
@@ -575,6 +727,111 @@
     setTimeout(()=> $("saveCustomBtn").textContent = "Save", 1200);
   });
 
+
+  function renderModesAndLaws(){
+    const state = load();
+    const wealthEl = $("wealthModeChk");
+    const workoutEl = $("workoutModeChk");
+    if (wealthEl) wealthEl.checked = !!state.wealthMode;
+    if (workoutEl) workoutEl.checked = (state.workoutMode !== false);
+
+    const laws = (state.laws || []).slice(0,5).filter(Boolean);
+    const wrap = $("lawList");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    if (!laws.length){
+      const div = document.createElement("div");
+      div.className = "muted";
+      div.textContent = "No laws yet. Add 1–5. Short. Sharp. True.";
+      wrap.appendChild(div);
+      return;
+    }
+    laws.forEach((law, idx)=>{
+      const row = document.createElement("div");
+      row.className = "row";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.marginBottom = "8px";
+
+      const left = document.createElement("div");
+      left.className = "pill";
+      left.style.flex = "1";
+      left.style.whiteSpace = "normal";
+      left.textContent = law;
+
+      const del = document.createElement("button");
+      del.className = "ghost";
+      del.style.width = "auto";
+      del.textContent = "Remove";
+      del.addEventListener("click", ()=>{
+        const st = load();
+        const arr = (st.laws || []).slice(0,5).filter(Boolean);
+        arr.splice(idx,1);
+        st.laws = arr;
+        save(st);
+        renderModesAndLaws();
+        init();
+      });
+
+      row.appendChild(left);
+      row.appendChild(del);
+      wrap.appendChild(row);
+    });
+  }
+
+  function wireModesAndLaws(){
+    const wealthEl = $("wealthModeChk");
+    const workoutEl = $("workoutModeChk");
+    if (wealthEl){
+      wealthEl.addEventListener("change", ()=>{
+        const state = load();
+        state.wealthMode = $("wealthModeChk").checked;
+        save(state);
+        init();
+      });
+    }
+    if (workoutEl){
+      workoutEl.addEventListener("change", ()=>{
+        const state = load();
+        state.workoutMode = $("workoutModeChk").checked;
+        save(state);
+        init();
+      });
+    }
+
+    const addBtn = $("addLawBtn");
+    if (addBtn){
+      addBtn.addEventListener("click", ()=>{
+        const val = $("lawInput").value.trim();
+        if (!val) return;
+        const state = load();
+        const laws = (state.laws || []).slice(0,5).filter(Boolean);
+        if (laws.length >= 5) { alert("Max 5 laws. Remove one first."); return; }
+        laws.push(val);
+        state.laws = laws;
+        save(state);
+        $("lawInput").value = "";
+        renderModesAndLaws();
+        init();
+      });
+    }
+
+    const icsBtn = $("icsBtn");
+    if (icsBtn){
+      icsBtn.addEventListener("click", ()=>{
+        const ics = buildICS();
+        const blob = new Blob([ics], {type:"text/calendar"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Kindling-8am-reminder.ics";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+    }
+  }
+
+
   $("exportBtn").addEventListener("click", ()=>{
     const state = load();
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:"application/json"});
@@ -622,6 +879,9 @@
 
     renderDraw(draw);
     renderStreak();
+
+    wireModesAndLaws();
+    renderModesAndLaws();
     renderJournal();
   }
 
