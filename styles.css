@@ -19,6 +19,14 @@
 --radius:22px;
 }
 
+.sigil{
+margin-top:6px;
+font-family:var(--serif);
+font-size:20px;
+letter-spacing:0.3em;
+color:rgba(181,116,43,0.55);
+}
+
 /* Optional: if your Inn site already hosts these, add them in /Kindling/assets/ */
 body{
 margin:0;
@@ -218,4 +226,5 @@ background: rgba(0,0,0,0.18);
 .btn{width:100%}
 .footrow{align-items:stretch}
 }
+
 
