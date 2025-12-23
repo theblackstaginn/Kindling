@@ -6,45 +6,207 @@
   <meta name="theme-color" content="#0b0c10" />
   <title>Kindling — Pagan Motivation</title>
   <link rel="manifest" href="manifest.webmanifest">
+  
   <style>
+    /* Black Stag Inn-inspired "public-facing" skin: dark stone + warm parchment + copper */
     :root{
-      --bg:#0b0c10; --card:#141824; --muted:#9aa3b2; --text:#e7e9ee;
-      --line:#273046; --accent:#2a3cff; --ok:#45d483; --warn:#ffcc66;
+      --bg:#07090c;            /* near-black stone */
+      --bg2:#0b0f14;           /* subtle lift for sticky header */
+      --card:#0f141c;          /* deep slate */
+      --card2:#111a24;         /* slightly brighter panels */
+      --muted:#b7a88b;         /* parchment-muted */
+      --text:#f2ead8;          /* warm ivory */
+      --line:#2a2f36;          /* iron line */
+      --accent:#b87333;        /* copper */
+      --accent2:#caa36a;       /* aged gold */
+      --ok:#6fe3b1;
+      --warn:#ffcc66;
+
+      --serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+      --sans: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      --radius: 16px;
     }
-    body{margin:0;font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
-    header{padding:16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,12,16,.92);backdrop-filter:blur(10px);z-index:10;}
-    h1{margin:0;font-size:18px;letter-spacing:.4px;}
-    .sub{margin-top:4px;font-size:12px;color:var(--muted);}
-    main{padding:16px;max-width:920px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:12px;}
-    @media (min-width: 920px){ main{grid-template-columns:1.2fr .8fr;} }
-    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;}
-    .tag{font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);display:inline-flex;gap:8px;align-items:center;}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+
+    /* Optional: load serif when online. Offline falls back gracefully. */
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap");
+
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 0%, rgba(184,115,51,.08), transparent 60%),
+        radial-gradient(900px 600px at 80% 10%, rgba(202,163,106,.06), transparent 55%),
+        linear-gradient(180deg, var(--bg), #050608 70%);
+    }
+
+    header{
+      padding:18px 16px 14px;
+      border-bottom:1px solid rgba(202,163,106,.16);
+      position:sticky; top:0;
+      background:rgba(11,15,20,.92);
+      backdrop-filter:blur(10px);
+      z-index:10;
+    }
+    h1{
+      margin:0;
+      font-family:var(--serif);
+      font-size:22px;
+      letter-spacing:.6px;
+      font-weight:700;
+    }
+    .sub{
+      margin-top:6px;
+      font-size:12px;
+      color:rgba(242,234,216,.75);
+      max-width:900px;
+    }
+
+    main{
+      padding:18px 16px 22px;
+      max-width:980px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    @media (min-width: 980px){
+      main{grid-template-columns:1.15fr .85fr;}
+    }
+
+    .card{
+      background:
+        radial-gradient(500px 280px at 20% 0%, rgba(184,115,51,.06), transparent 60%),
+        linear-gradient(180deg, rgba(17,26,36,.85), rgba(15,20,28,.95));
+      border:1px solid rgba(202,163,106,.18);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:
+        0 10px 30px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(242,234,216,.06);
+    }
+
+    .tag{
+      font-size:12px;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(202,163,106,.22);
+      color:rgba(242,234,216,.78);
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      background:rgba(7,9,12,.55);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+
     button,input,select,textarea{
-      width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--line);
-      background:#0f1320;color:var(--text);padding:10px 12px;font-size:14px;
+      width:100%;
+      box-sizing:border-box;
+      border-radius:14px;
+      border:1px solid rgba(202,163,106,.22);
+      background:rgba(7,9,12,.55);
+      color:var(--text);
+      padding:11px 12px;
+      font-size:14px;
     }
-    textarea{min-height:72px;resize:vertical;}
-    button{cursor:pointer;background:#1a2140;}
-    button.primary{background:var(--accent);border-color:var(--accent);}
-    button.ghost{background:#0f1320;}
+    textarea{min-height:74px;resize:vertical;}
+
+    button{
+      cursor:pointer;
+      background:rgba(17,26,36,.8);
+      transition:transform .04s ease, border-color .12s ease, background .12s ease;
+    }
+    button:active{transform:translateY(1px);}
+
+    button.primary{
+      background:linear-gradient(180deg, rgba(184,115,51,.98), rgba(148,83,30,.98));
+      border-color:rgba(202,163,106,.65);
+      color:#140a02;
+      font-weight:700;
+    }
+    button.primary:hover{
+      background:linear-gradient(180deg, rgba(202,163,106,.98), rgba(184,115,51,.98));
+    }
+
+    button.ghost{
+      background:rgba(7,9,12,.35);
+      border-color:rgba(202,163,106,.18);
+    }
+
     .grid{display:grid;grid-template-columns:1fr;gap:10px;}
     @media (min-width: 560px){ .grid{grid-template-columns:1fr 1fr;} }
-    .big{font-size:18px;font-weight:800;line-height:1.25;margin:10px 0 6px;}
-    .muted{color:var(--muted);font-size:12px;}
-    .hr{border:none;border-top:1px solid var(--line);margin:12px 0;}
-    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#0f1320;color:var(--muted);font-size:12px;}
+
+    .big{
+      font-family:var(--serif);
+      font-size:22px;
+      font-weight:700;
+      line-height:1.22;
+      margin:12px 0 8px;
+      letter-spacing:.3px;
+    }
+    .muted{color:rgba(242,234,216,.70);font-size:12px;}
+
+    .hr{border:none;border-top:1px solid rgba(202,163,106,.16);margin:14px 0;}
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:9px 11px;
+      border-radius:999px;
+      border:1px solid rgba(202,163,106,.20);
+      background:rgba(7,9,12,.45);
+      color:rgba(242,234,216,.78);
+      font-size:12px;
+    }
     .ok{color:var(--ok);} .warn{color:var(--warn);}
+
     .list{display:flex;flex-direction:column;gap:8px;}
-    .item{padding:10px;border:1px solid var(--line);background:#0f1320;border-radius:12px;}
-    .item .t{font-weight:700;margin-bottom:4px;}
-    .item .d{font-size:12px;color:var(--muted);line-height:1.4;}
+
+    .item{
+      padding:11px 12px;
+      border:1px solid rgba(202,163,106,.18);
+      background:rgba(7,9,12,.45);
+      border-radius:14px;
+    }
+    .item .t{
+      font-family:var(--serif);
+      font-weight:700;
+      margin-bottom:4px;
+      letter-spacing:.2px;
+    }
+    .item .d{font-size:12px;color:rgba(242,234,216,.72);line-height:1.45;}
+
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-    .tab{padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:#0f1320;color:var(--muted);cursor:pointer;user-select:none;}
-    .tab.active{border-color:var(--accent);color:var(--text);}
+    .tab{
+      padding:8px 11px;
+      border-radius:999px;
+      border:1px solid rgba(202,163,106,.18);
+      background:rgba(7,9,12,.40);
+      color:rgba(242,234,216,.72);
+      cursor:pointer;
+      user-select:none;
+      font-size:12px;
+    }
+    .tab.active{
+      border-color:rgba(202,163,106,.55);
+      color:var(--text);
+      background:rgba(184,115,51,.18);
+    }
+
     .hidden{display:none;}
-    a{color:inherit;}
+    a{color:var(--accent2);text-decoration:none;}
+    a:hover{text-decoration:underline;}
   </style>
+
 </head>
 <body>
 <header>
