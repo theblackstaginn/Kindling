@@ -24,7 +24,7 @@ body{
       rgba(11,15,20,0.82),
       rgba(11,15,20,0.82)
     ),
-    url("bg-ruins.jpg");
+    url("bg-ruins-v2.jpg");
 
   background-size: cover;
   background-position: center;
@@ -182,5 +182,6 @@ body{
   line-height: 1.35;
   margin: 10px 0 12px;
 }
+
 
 
