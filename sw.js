@@ -7,7 +7,7 @@ const ASSETS = [
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
-  "./bg-ruins.jpg"
+  "./bg-ruins-v2.jpg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -47,5 +47,6 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
