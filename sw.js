@@ -1,4 +1,4 @@
-const CACHE_NAME = "kindling-cache-v1";
+const CACHE_NAME = "kindling-cache-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const ASSETS = [
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
+  "./bg-ruins.jpg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -46,3 +47,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
