@@ -7,6 +7,8 @@ const STORAGE_KEY = "kindling_state_v2";
 const KINDLING_DAYS = [1, 2, 5, 6]; // Mon Tue Fri Sat
 // Hearth days: Sun Wed Thu (0 3 4)
 
+const MICRO_COOLDOWN_KINDLING_DAYS = 7;
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -25,7 +27,7 @@ function saveState(state) {
 function defaultState() {
   return {
     deviceSalt: null,
-    // history[YYYY-MM-DD] = { drawId, element, micro, boundary, mantra, workout, dayType, completed }
+    // history[YYYY-MM-DD] = { drawId, element, micro, boundary, mantra, workout, dayType, completed, redrawNonce }
     history: {},
     lastCompletedDate: null, // YYYY-MM-DD
     streak: 0,
@@ -38,14 +40,21 @@ function ensureDeviceSalt(state) {
   state.deviceSalt = `${Math.random().toString(16).slice(2)}-${Date.now().toString(16)}`;
 }
 
-function pad2(n) { return String(n).padStart(2, "0"); }
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
 
 function toISODateLocal(d = new Date()) {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
 function formatToday(d = new Date()) {
-  return d.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  return d.toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
 
 function getDayType(d = new Date()) {
@@ -61,13 +70,32 @@ function seasonName(d = new Date()) {
   return "Autumn";
 }
 
+function isoToDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function isFriday(d = new Date()) {
+  return d.getDay() === 5; // Fri
+}
+
+function getRecentKindlingMicros(state, n = MICRO_COOLDOWN_KINDLING_DAYS) {
+  const entries = Object.entries(state.history || {}).sort((a, b) => a[0].localeCompare(b[0])); // ISO sort
+  const kindling = entries
+    .filter(([, v]) => v && v.dayType === "kindling" && typeof v.micro === "string")
+    .slice(-n)
+    .map(([, v]) => v.micro);
+
+  return new Set(kindling);
+}
+
 // ---------------- RNG (deterministic) ----------------
 // Mulberry32 PRNG
 function mulberry32(seed) {
   let a = seed >>> 0;
-  return function() {
+  return function () {
     a |= 0;
-    a = (a + 0x6D2B79F5) | 0;
+    a = (a + 0x6d2b79f5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
@@ -93,6 +121,14 @@ function pick(rng, arr) {
 // Elements for Kindling days
 const ELEMENTS = ["Fire", "Earth", "Air", "Water", "Aether"];
 
+const FRIDAY_HARVEST = [
+  "Harvest check: confirm next 7 days are covered (bills, groceries, gas).",
+  "Harvest check: check credit utilization and plan a 5% reduction.",
+  "Harvest check: move $10–$50 into Buffer (automatic beats heroic).",
+  "Harvest check: send one income ping (client, lead, listing, follow-up).",
+  "Harvest check: review subscriptions—cancel or downgrade one leak.",
+];
+
 // Micro-actions (wealth + stability) — designed to push cashflow + credit strength
 const MICRO_ACTIONS = [
   "Pay one bill early (even $5 extra toward principal).",
@@ -104,7 +140,7 @@ const MICRO_ACTIONS = [
   "Cancel or downgrade one recurring expense or unused subscription.",
   "Check credit report / utilization and set a micro-plan to lower utilization by 5%.",
   "Build one small asset: a product listing draft, a portfolio post, or a template.",
-  "Set a 25-minute sprint on the highest-leverage task you’re avoiding."
+  "Set a 25-minute sprint on the highest-leverage task you’re avoiding.",
 ];
 
 // Boundaries
@@ -115,7 +151,7 @@ const BOUNDARIES = [
   "No overcommitting. A clean ‘no’ is a protective spell.",
   "No self-betrayal: do the one thing you said you’d do.",
   "No alcohol / numbing until the micro-action is done.",
-  "No multitasking during money tasks. Single focus, sharp blade."
+  "No multitasking during money tasks. Single focus, sharp blade.",
 ];
 
 // Mantras
@@ -126,7 +162,7 @@ const MANTRAS = [
   "I build the altar of tomorrow with today’s actions.",
   "I choose the path that strengthens my future self.",
   "Cash flow is oxygen. I protect oxygen.",
-  "Discipline is devotion made visible."
+  "Discipline is devotion made visible.",
 ];
 
 // Workouts
@@ -150,7 +186,7 @@ const HEARTH_SCRIPT = {
   micro: "Maintain the hearth: do ONE stabilizing task (clean, prep, plan, bills, inventory, calendar).",
   boundary: "Contain energy. Don’t expand scope. Protect tomorrow’s fire.",
   mantra: "I preserve the flame by tending the ash.",
-  workout: "Light cardio only: 20–30 min walking or mobility."
+  workout: "Light cardio only: 20–30 min walking or mobility.",
 };
 
 // ---------------- Draw generation ----------------
@@ -170,20 +206,29 @@ function generateDrawForDate(state, isoDate, dayType, redrawNonce = 0) {
       mantra: HEARTH_SCRIPT.mantra,
       workout: pick(rng, WORKOUT_HEARTH),
       completed: false,
-      redrawNonce
+      redrawNonce,
     };
   }
+
+  // Kindling: Micro-action selection with cooldown (avoid repeats)
+  let microPool = MICRO_ACTIONS.slice();
+  const recent = getRecentKindlingMicros(state, MICRO_COOLDOWN_KINDLING_DAYS);
+  microPool = microPool.filter((m) => !recent.has(m));
+  if (microPool.length === 0) microPool = MICRO_ACTIONS.slice();
+
+  // Friday Harvest override (money altar)
+  const micro = isFriday(isoToDate(isoDate)) ? pick(rng, FRIDAY_HARVEST) : pick(rng, microPool);
 
   return {
     drawId: `K-${isoDate}-${String(redrawNonce).padStart(2, "0")}`,
     dayType,
     element: pick(rng, ELEMENTS),
-    micro: pick(rng, MICRO_ACTIONS),
+    micro: micro,
     boundary: pick(rng, BOUNDARIES),
     mantra: pick(rng, MANTRAS),
     workout: pick(rng, WORKOUT_KINDLING),
     completed: false,
-    redrawNonce
+    redrawNonce,
   };
 }
 
@@ -206,11 +251,6 @@ function getOrCreateToday(state) {
 }
 
 // ---------------- Streak logic ----------------
-
-function isoToDate(iso) {
-  const [y,m,d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d);
-}
 
 function daysBetween(aIso, bIso) {
   const a = isoToDate(aIso);
@@ -260,6 +300,12 @@ function render(state, todayDraw) {
 
   const hearthLabel = todayDraw.dayType === "kindling" ? "Kindling Day" : "Hearth Maintenance";
   setText("hearthState", hearthLabel);
+
+  const rule =
+    todayDraw.dayType === "kindling"
+      ? "Kindling Day: advance wealth + stability. Do the micro-action OR hold the boundary. Then move your body."
+      : "Hearth Day: maintain. One stabilizing task + light cardio. Contain scope. Protect tomorrow’s fire.";
+  setText("dayRule", rule);
 
   setText("season", seasonName(new Date()));
   setText("streak", String(state.streak || 0));
@@ -325,7 +371,6 @@ function main() {
   const markBtn = document.getElementById("markComplete");
   markBtn?.addEventListener("click", () => {
     markComplete(state, todayIso, todayDraw);
-    // re-fetch updated
     const updated = state.history[todayIso];
     render(state, updated);
   });
