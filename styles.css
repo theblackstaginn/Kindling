@@ -164,4 +164,13 @@ body{
   font-weight: 650;
 }
 
+.ruleBanner{
+  background: rgba(127,209,185,.08);
+  border: 1px solid rgba(127,209,185,.20);
+  border-radius: 14px;
+  padding: 10px 12px;
+  color: rgba(233,238,247,.90);
+  line-height: 1.35;
+  margin: 10px 0 12px;
+}
 
