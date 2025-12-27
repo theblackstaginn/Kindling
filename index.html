@@ -1,121 +1,116 @@
+
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kindling</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kindling</title>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0f14">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b0f14">
 
-<link rel="apple-touch-icon" href="apple-touch-icon-180.png">
-<link rel="stylesheet" href="styles.css" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
-  
-  
 <body>
-<main class="wrap">
-<header class="top">
-<div class="brand">
-<h1>Kindling</h1>
-<div class="sigil">ᚦ</div>
-<p class="sub">
-Pagan motivation, discipline, and quiet power.
-<span class="dim">You were born to prosper.</span>
-</p>
-</div>
-</header>
-  
-<div class="stagRule"></div>
-  
-<section class="panel">
-<div class="row headrow">
-<div class="datebox">
-<div class="label">Today</div>
-<div id="today" class="value">—</div>
-</div>
+  <main class="wrap">
+    <header class="top">
+      <div class="brand">
+        <h1>Kindling</h1>
+        <p class="sub">
+          Pagan motivation, discipline, and quiet power — offline-first.
+          <span class="dim">No accounts. Stored on your device.</span>
+        </p>
+      </div>
+    </header>
 
-<div class="datebox">
-<div class="label">Draw ID</div>
-<div id="drawId" class="value mono">—</div>
-</div>
-</div>
+    <section class="panel">
+      <div class="row headrow">
+        <div class="datebox">
+          <div class="label">Today</div>
+          <div id="today" class="value">—</div>
+        </div>
 
-<div class="divider"></div>
+        <div class="datebox">
+          <div class="label">Draw ID</div>
+          <div id="drawId" class="value mono">—</div>
+        </div>
+      </div>
 
-<div class="card">
-<div class="cardTitle">Element</div>
-<div id="kindlingElement" class="cardValue">—</div>
-</div>
+      <div class="divider"></div>
 
-<div class="card">
-<div class="cardTitle">Micro-action (wealth + stability)</div>
-<div id="kindlingMicro" class="cardValue">—</div>
-</div>
+      <div class="card">
+        <div class="cardTitle">Element</div>
+        <div id="kindlingElement" class="cardValue">—</div>
+      </div>
 
-<div class="card">
-<div class="cardTitle">Boundary (protect the hearth)</div>
-<div id="kindlingBoundary" class="cardValue">—</div>
-</div>
+      <div class="card">
+        <div class="cardTitle">Micro-action (wealth + stability)</div>
+        <div id="kindlingMicro" class="cardValue">—</div>
+      </div>
 
-<div class="card">
-<div class="cardTitle">Mantra</div>
-<div id="kindlingMantra" class="cardValue">—</div>
-</div>
+      <div class="card">
+        <div class="cardTitle">Boundary (protect the hearth)</div>
+        <div id="kindlingBoundary" class="cardValue">—</div>
+      </div>
 
-<div class="card">
-<div class="cardTitle">Workout (30 min)</div>
-<div id="kindlingWorkout" class="cardValue">—</div>
-</div>
+      <div class="card">
+        <div class="cardTitle">Mantra</div>
+        <div id="kindlingMantra" class="cardValue">—</div>
+      </div>
 
-<div class="divider"></div>
+      <div class="card">
+        <div class="cardTitle">Workout</div>
+        <div id="kindlingWorkout" class="cardValue">—</div>
+      </div>
 
-<div class="row footrow">
-<div class="pill">
-<span class="pillLabel">Hearth:</span>
-<span id="hearthState" class="pillValue">—</span>
-</div>
+      <div class="divider"></div>
 
-<div class="pill">
-<span class="pillLabel">Season:</span>
-<span id="season" class="pillValue">—</span>
-</div>
+      <div class="row footrow">
+        <div class="pill">
+          <span class="pillLabel">Hearth:</span>
+          <span id="hearthState" class="pillValue">—</span>
+        </div>
 
-<div class="pill">
-<span class="pillLabel">Streak:</span>
-<span id="streak" class="pillValue">0</span>
-<span class="pillLabel">days</span>
-</div>
+        <div class="pill">
+          <span class="pillLabel">Season:</span>
+          <span id="season" class="pillValue">—</span>
+        </div>
 
-<button id="markComplete" class="btn">Mark complete</button>
-</div>
+        <div class="pill">
+          <span class="pillLabel">Streak:</span>
+          <span id="streak" class="pillValue">0</span>
+          <span class="pillLabel">days</span>
+        </div>
 
-<p class="tip">
-Tip: <span class="quote">“complete”</span> means you did the micro-action <em>or</em>
-consciously held the boundary. Perfection is not the point. Continuity is.
-</p>
+        <button id="markComplete" class="btn">Mark complete</button>
+      </div>
 
-<div class="row actions">
-<button id="redraw" class="btn ghost" title="Admin: redraw today (resets today only)">
-Redraw today
-</button>
-<button id="resetAll" class="btn ghost" title="Danger: clears streak + history">
-Reset all
-</button>
-</div>
+      <p class="tip">
+        Tip: <span class="quote">“complete”</span> means you honored the day.
+        On Kindling days you did the micro-action <em>or</em held the boundary.
+        On Hearth days you did one maintenance task + light movement.
+      </p>
 
-<p class="small dim">
-Offline-first. Nothing leaves this device. Your calendar can be the bell; Kindling is the hearth.
-</p>
-</section>
-</main>
+      <div class="row actions">
+        <button id="redraw" class="btn ghost" title="Admin: redraw today (resets today only)">
+          Redraw today
+        </button>
+        <button id="resetAll" class="btn ghost" title="Danger: clears streak + history">
+          Reset all
+        </button>
+      </div>
 
-<script type="module" src="app.js"></script>
+      <p class="small dim">
+        Offline-first. Nothing leaves this device. Your calendar can be the bell; Kindling is the hearth.
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
 </body>
-
 </html>
-
 
 
 
