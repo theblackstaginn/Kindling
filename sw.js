@@ -1,4 +1,4 @@
-const CACHE_NAME = "kindling-cache-v5";
+const CACHE_NAME = "kindling-cache-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -47,6 +47,7 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
 
