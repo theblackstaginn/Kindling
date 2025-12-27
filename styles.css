@@ -2,18 +2,19 @@
   --bg:#0b0f14;
   --panel:#0f1520;
   --panel2:#0c111a;
-  --line:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.10);
   --text:#e9eef7;
   --muted:rgba(233,238,247,.72);
   --dim:rgba(233,238,247,.55);
-  --accent:#b98b55; /* copper-ish */
-  --accent2:#7fd1b9; /* quiet green */
-  --shadow: 0 10px 30px rgba(0,0,0,.45);
+  --accent:#b98b55; /* copper */
+  --accent2:#7fd1b9; /* moss */
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
   --radius: 18px;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
+
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
@@ -21,8 +22,8 @@ body{
 
   background:
     linear-gradient(
-      rgba(11,15,20,0.82),
-      rgba(11,15,20,0.82)
+      rgba(11,15,20,0.55),
+      rgba(11,15,20,0.55)
     ),
     url("bg-ruins-v2.jpg");
 
@@ -31,6 +32,7 @@ body{
   background-attachment: fixed;
 }
 
+/* ---- Layout ---- */
 
 .wrap{
   max-width: 820px;
@@ -39,26 +41,38 @@ body{
 }
 
 .top{margin-bottom: 16px;}
+
 .brand h1{
   margin: 0 0 6px;
   font-size: 34px;
   letter-spacing: .4px;
 }
+
 .sub{
   margin: 0;
   color: var(--muted);
   line-height: 1.35;
 }
+
 .dim{color: var(--dim)}
 .small{font-size: 13px}
-.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
+
+.mono{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+}
+
+/* ---- Glass Panels ---- */
 
 .panel{
-  background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 35%), var(--panel);
-  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 40%),
+    rgba(10,14,18,0.55);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: var(--radius);
   padding: 18px 18px 16px;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .row{
@@ -71,18 +85,23 @@ body{
 .headrow .datebox{
   flex: 1 1 220px;
 }
+
 .datebox{
-  background: var(--panel2);
-  border: 1px solid var(--line);
+  background: rgba(12,17,26,0.55);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 14px;
   padding: 12px 12px 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
+
 .label{
   color: var(--dim);
   font-size: 12px;
   letter-spacing: .4px;
   text-transform: uppercase;
 }
+
 .value{
   margin-top: 6px;
   font-size: 16px;
@@ -91,17 +110,22 @@ body{
 
 .divider{
   height: 1px;
-  background: var(--line);
+  background: rgba(255,255,255,.10);
   margin: 14px 0;
 }
 
+/* ---- Cards ---- */
+
 .card{
-  background: rgba(255,255,255,.02);
-  border: 1px solid var(--line);
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 16px;
   padding: 14px 14px 12px;
   margin: 10px 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
+
 .cardTitle{
   color: var(--dim);
   font-size: 12px;
@@ -109,41 +133,48 @@ body{
   text-transform: uppercase;
   margin-bottom: 8px;
 }
+
 .cardValue{
   font-size: 16px;
   line-height: 1.45;
   color: var(--text);
 }
 
+/* ---- Pills ---- */
+
 .pill{
-  background: rgba(255,255,255,.02);
-  border: 1px solid var(--line);
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 999px;
   padding: 9px 12px;
   display:flex;
   gap: 8px;
   align-items:center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
+
 .pillLabel{
   color: var(--dim);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: .35px;
 }
+
 .pillValue{
   color: var(--text);
   font-weight: 650;
 }
 
-.footrow{
-  justify-content: space-between;
-}
+/* ---- Actions ---- */
+
+.footrow{justify-content: space-between}
 .actions{margin-top: 10px}
 
 .btn{
   appearance: none;
-  border: 1px solid rgba(185,139,85,.42);
-  background: rgba(185,139,85,.12);
+  border: 1px solid rgba(185,139,85,.45);
+  background: rgba(185,139,85,.15);
   color: var(--text);
   padding: 11px 14px;
   border-radius: 14px;
@@ -151,37 +182,48 @@ body{
   font-weight: 650;
   letter-spacing: .2px;
 }
-.btn:hover{background: rgba(185,139,85,.18)}
+
+.btn:hover{background: rgba(185,139,85,.22)}
 .btn:active{transform: translateY(1px)}
+
 .btn.ghost{
-  border-color: var(--line);
-  background: rgba(255,255,255,.02);
+  border-color: rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
   color: var(--muted);
 }
+
 .btn.ghost:hover{
-  background: rgba(255,255,255,.04);
+  background: rgba(255,255,255,.07);
   color: var(--text);
 }
+
+/* ---- Rule Banner ---- */
+
+.ruleBanner{
+  background: rgba(127,209,185,.18);
+  border: 1px solid rgba(127,209,185,.30);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: rgba(233,238,247,.95);
+  line-height: 1.4;
+  margin: 10px 0 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---- Footer Text ---- */
 
 .tip{
   margin: 12px 2px 8px;
   color: var(--muted);
   line-height: 1.45;
 }
+
 .quote{
   color: var(--text);
   font-weight: 650;
 }
 
-.ruleBanner{
-  background: rgba(127,209,185,.08);
-  border: 1px solid rgba(127,209,185,.20);
-  border-radius: 14px;
-  padding: 10px 12px;
-  color: rgba(233,238,247,.90);
-  line-height: 1.35;
-  margin: 10px 0 12px;
-}
 
 
 
