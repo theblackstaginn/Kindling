@@ -287,6 +287,15 @@ function setText(id, value) {
   if (el) el.textContent = value;
 }
 
+function forceRepaint() {
+  // iOS Safari / PWA: occasionally fails to repaint text layers after fast DOM updates.
+  // This nudges the compositor and forces a clean repaint.
+  document.body.style.transform = "translateZ(0)";
+  requestAnimationFrame(() => {
+    document.body.style.transform = "";
+  });
+}
+
 function render(state, todayDraw) {
   setText("today", formatToday(new Date()));
   setText("drawId", todayDraw.drawId);
