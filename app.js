@@ -1,4 +1,4 @@
-// Kindling — offline-first daily draw + streak
+// Kindling — daily draw + streak
 // Four-day schedule: Mon/Tue/Fri/Sat are Kindling days.
 // Other days are Hearth maintenance + light cardio.
 
@@ -36,7 +36,7 @@ function defaultState() {
 
 function ensureDeviceSalt(state) {
   if (state.deviceSalt) return;
-  // stable per device install, random enough
+  // stable per install, random enough
   state.deviceSalt = `${Math.random().toString(16).slice(2)}-${Date.now().toString(16)}`;
 }
 
@@ -150,7 +150,6 @@ const BOUNDARIES = [
   "No debating with strangers. Your energy is currency.",
   "No overcommitting. A clean ‘no’ is a protective spell.",
   "No self-betrayal: do the one thing you said you’d do.",
-  "No alcohol / numbing until the micro-action is done.",
   "No multitasking during money tasks. Single focus, sharp blade.",
 ];
 
@@ -345,14 +344,14 @@ function resetAll() {
   location.reload();
 }
 
-// ---------------- Service Worker (offline) ----------------
+// ---------------- Service Worker ----------------
 
 async function registerSW() {
   if (!("serviceWorker" in navigator)) return;
   try {
     await navigator.serviceWorker.register("./sw.js", { scope: "./" });
   } catch {
-    // silent: offline-first shouldn’t crash on SW failure
+    // silent: app shouldn’t crash on SW failure
   }
 }
 
@@ -384,7 +383,7 @@ function main() {
 
   const resetBtn = document.getElementById("resetAll");
   resetBtn?.addEventListener("click", () => {
-    const ok = confirm("Reset all? This clears streak + history on this device.");
+    const ok = confirm("Reset all? This clears streak + history.");
     if (ok) resetAll();
   });
 
