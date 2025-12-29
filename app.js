@@ -62,7 +62,6 @@ function getDayType(d = new Date()) {
 }
 
 function seasonName(d = new Date()) {
-  // simple meteorological seasons (northern hemisphere-ish; good enough for discipline)
   const m = d.getMonth(); // 0=Jan
   if (m === 11 || m === 0 || m === 1) return "Winter";
   if (m === 2 || m === 3 || m === 4) return "Spring";
@@ -76,11 +75,11 @@ function isoToDate(iso) {
 }
 
 function isFriday(d = new Date()) {
-  return d.getDay() === 5; // Fri
+  return d.getDay() === 5;
 }
 
 function getRecentKindlingMicros(state, n = MICRO_COOLDOWN_KINDLING_DAYS) {
-  const entries = Object.entries(state.history || {}).sort((a, b) => a[0].localeCompare(b[0])); // ISO sort
+  const entries = Object.entries(state.history || {}).sort((a, b) => a[0].localeCompare(b[0]));
   const kindling = entries
     .filter(([, v]) => v && v.dayType === "kindling" && typeof v.micro === "string")
     .slice(-n)
@@ -89,8 +88,8 @@ function getRecentKindlingMicros(state, n = MICRO_COOLDOWN_KINDLING_DAYS) {
   return new Set(kindling);
 }
 
-// ---------------- RNG (deterministic) ----------------
-// Mulberry32 PRNG
+// ---------------- RNG ----------------
+
 function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {
@@ -103,7 +102,6 @@ function mulberry32(seed) {
 }
 
 function hashToSeed(str) {
-  // FNV-1a-ish
   let h = 2166136261;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
@@ -118,7 +116,6 @@ function pick(rng, arr) {
 
 // ---------------- Content pools ----------------
 
-// Elements for Kindling days
 const ELEMENTS = ["Fire", "Earth", "Air", "Water", "Aether"];
 
 const FRIDAY_HARVEST = [
@@ -129,7 +126,6 @@ const FRIDAY_HARVEST = [
   "Harvest check: review subscriptions—cancel or downgrade one leak.",
 ];
 
-// Micro-actions (wealth + stability) — designed to push cashflow + credit strength
 const MICRO_ACTIONS = [
   "Pay one bill early (even $5 extra toward principal).",
   "Review bank + card balances and confirm next 7 days are covered.",
@@ -143,7 +139,6 @@ const MICRO_ACTIONS = [
   "Set a 25-minute sprint on the highest-leverage task you’re avoiding.",
 ];
 
-// Boundaries
 const BOUNDARIES = [
   "No doomscrolling before noon. Protect attention like a shrine.",
   "No impulse spending today. Sleep on every purchase.",
@@ -153,7 +148,6 @@ const BOUNDARIES = [
   "No multitasking during money tasks. Single focus, sharp blade.",
 ];
 
-// Mantras
 const MANTRAS = [
   "I do what compounds.",
   "Quiet power. Clean choices.",
@@ -164,7 +158,6 @@ const MANTRAS = [
   "Discipline is devotion made visible.",
 ];
 
-// Workouts
 const WORKOUT_KINDLING = [
   "30 min strength: push/pull/legs (simple full-body).",
   "30 min brisk walk + 5 min mobility.",
@@ -179,7 +172,6 @@ const WORKOUT_HEARTH = [
   "Gentle zone 2: 20–30 min bike/walk (no heroics).",
 ];
 
-// Hearth day script (fixed, non-random; the point is containment)
 const HEARTH_SCRIPT = {
   element: "Hearth",
   micro: "Maintain the hearth: do ONE stabilizing task (clean, prep, plan, bills, inventory, calendar).",
@@ -192,8 +184,7 @@ const HEARTH_SCRIPT = {
 
 function generateDrawForDate(state, isoDate, dayType, redrawNonce = 0) {
   const seedStr = `${isoDate}|${state.deviceSalt}|${dayType}|${redrawNonce}`;
-  const seed = hashToSeed(seedStr);
-  const rng = mulberry32(seed);
+  const rng = mulberry32(hashToSeed(seedStr));
 
   if (dayType === "hearth") {
     return {
@@ -209,20 +200,20 @@ function generateDrawForDate(state, isoDate, dayType, redrawNonce = 0) {
     };
   }
 
-  // Kindling: Micro-action selection with cooldown (avoid repeats)
   let microPool = MICRO_ACTIONS.slice();
   const recent = getRecentKindlingMicros(state, MICRO_COOLDOWN_KINDLING_DAYS);
   microPool = microPool.filter((m) => !recent.has(m));
   if (microPool.length === 0) microPool = MICRO_ACTIONS.slice();
 
-  // Friday Harvest override (money altar)
-  const micro = isFriday(isoToDate(isoDate)) ? pick(rng, FRIDAY_HARVEST) : pick(rng, microPool);
+  const micro = isFriday(isoToDate(isoDate))
+    ? pick(rng, FRIDAY_HARVEST)
+    : pick(rng, microPool);
 
   return {
     drawId: `K-${isoDate}-${String(redrawNonce).padStart(2, "0")}`,
     dayType,
     element: pick(rng, ELEMENTS),
-    micro: micro,
+    micro,
     boundary: pick(rng, BOUNDARIES),
     mantra: pick(rng, MANTRAS),
     workout: pick(rng, WORKOUT_KINDLING),
@@ -236,7 +227,6 @@ function getOrCreateToday(state) {
   const dayType = getDayType();
 
   if (state.history[iso]) {
-    // If the day type changed due to timezone weirdness, honor current day type by regenerating once.
     if (state.history[iso].dayType !== dayType) {
       state.history[iso] = generateDrawForDate(state, iso, dayType, 0);
       saveState(state);
@@ -252,10 +242,7 @@ function getOrCreateToday(state) {
 // ---------------- Streak logic ----------------
 
 function daysBetween(aIso, bIso) {
-  const a = isoToDate(aIso);
-  const b = isoToDate(bIso);
-  const ms = 24 * 60 * 60 * 1000;
-  return Math.round((b - a) / ms);
+  return Math.round((isoToDate(bIso) - isoToDate(aIso)) / 86400000);
 }
 
 function updateStreakOnComplete(state, todayIso) {
@@ -267,17 +254,12 @@ function updateStreakOnComplete(state, todayIso) {
   }
 
   const diff = daysBetween(last, todayIso);
-  if (diff === 0) {
-    // already counted today
-    return;
-  } else if (diff === 1) {
-    state.streak = (state.streak || 0) + 1;
-    state.lastCompletedDate = todayIso;
-  } else {
-    // missed days => reset
+  if (diff === 1) {
+    state.streak += 1;
+  } else if (diff > 1) {
     state.streak = 1;
-    state.lastCompletedDate = todayIso;
   }
+  state.lastCompletedDate = todayIso;
 }
 
 // ---------------- UI ----------------
@@ -288,8 +270,6 @@ function setText(id, value) {
 }
 
 function forceRepaint() {
-  // iOS Safari / PWA: occasionally fails to repaint text layers after fast DOM updates.
-  // This nudges the compositor and forces a clean repaint.
   document.body.style.transform = "translateZ(0)";
   requestAnimationFrame(() => {
     document.body.style.transform = "";
@@ -299,21 +279,23 @@ function forceRepaint() {
 function render(state, todayDraw) {
   setText("today", formatToday(new Date()));
   setText("drawId", todayDraw.drawId);
-
   setText("kindlingElement", todayDraw.element);
   setText("kindlingMicro", todayDraw.micro);
   setText("kindlingBoundary", todayDraw.boundary);
   setText("kindlingMantra", todayDraw.mantra);
   setText("kindlingWorkout", todayDraw.workout);
 
-  const hearthLabel = todayDraw.dayType === "kindling" ? "Kindling Day" : "Hearth Maintenance";
-  setText("hearthState", hearthLabel);
+  setText(
+    "hearthState",
+    todayDraw.dayType === "kindling" ? "Kindling Day" : "Hearth Maintenance"
+  );
 
-  const rule =
+  setText(
+    "dayRule",
     todayDraw.dayType === "kindling"
       ? "Kindling Day: advance wealth + stability. Do the micro-action OR hold the boundary. Then move your body."
-      : "Hearth Day: maintain. One stabilizing task + light cardio. Contain scope. Protect tomorrow’s fire.";
-  setText("dayRule", rule);
+      : "Hearth Day: maintain. One stabilizing task + light cardio. Contain scope. Protect tomorrow’s fire."
+  );
 
   setText("season", seasonName(new Date()));
   setText("streak", String(state.streak || 0));
@@ -323,28 +305,28 @@ function render(state, todayDraw) {
     btn.textContent = todayDraw.completed ? "Completed" : "Mark complete";
     btn.disabled = !!todayDraw.completed;
   }
+
+  forceRepaint();
 }
 
 // ---------------- Actions ----------------
 
 function markComplete(state, todayIso, todayDraw) {
   if (todayDraw.completed) return;
-
   todayDraw.completed = true;
   state.history[todayIso] = todayDraw;
-
   updateStreakOnComplete(state, todayIso);
-
   saveState(state);
 }
 
 function redrawToday(state, todayIso) {
-  const dayType = getDayType();
-  const existing = state.history[todayIso];
-  const nextNonce = existing ? (existing.redrawNonce || 0) + 1 : 1;
-
-  // redraw resets only today’s completion status (streak remains what it was unless you want stricter rules)
-  state.history[todayIso] = generateDrawForDate(state, todayIso, dayType, nextNonce);
+  const nextNonce = (state.history[todayIso]?.redrawNonce || 0) + 1;
+  state.history[todayIso] = generateDrawForDate(
+    state,
+    todayIso,
+    getDayType(),
+    nextNonce
+  );
   saveState(state);
 }
 
@@ -359,9 +341,7 @@ async function registerSW() {
   if (!("serviceWorker" in navigator)) return;
   try {
     await navigator.serviceWorker.register("./sw.js", { scope: "./" });
-  } catch {
-    // silent: app shouldn’t crash on SW failure
-  }
+  } catch {}
 }
 
 // ---------------- Boot ----------------
@@ -376,24 +356,18 @@ function main() {
 
   render(state, todayDraw);
 
-  const markBtn = document.getElementById("markComplete");
-  markBtn?.addEventListener("click", () => {
+  document.getElementById("markComplete")?.addEventListener("click", () => {
     markComplete(state, todayIso, todayDraw);
-    const updated = state.history[todayIso];
-    render(state, updated);
+    render(state, state.history[todayIso]);
   });
 
-  const redrawBtn = document.getElementById("redraw");
-  redrawBtn?.addEventListener("click", () => {
+  document.getElementById("redraw")?.addEventListener("click", () => {
     redrawToday(state, todayIso);
-    const updated = state.history[todayIso];
-    render(state, updated);
+    render(state, state.history[todayIso]);
   });
 
-  const resetBtn = document.getElementById("resetAll");
-  resetBtn?.addEventListener("click", () => {
-    const ok = confirm("Reset all? This clears streak + history.");
-    if (ok) resetAll();
+  document.getElementById("resetAll")?.addEventListener("click", () => {
+    if (confirm("Reset all? This clears streak + history.")) resetAll();
   });
 
   registerSW();
