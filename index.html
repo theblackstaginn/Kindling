@@ -1,0 +1,1364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b0d12" />
+  <title>Kindling</title>
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="apple-touch-icon-180.png" />
+
+  <style>
+    :root{
+      --bg-image: url("bg-ruins-v2.jpg");
+
+      --bg:#0b0d12;
+      --glass: rgba(14,18,28,.72);
+      --glass2: rgba(18,23,37,.72);
+      --text:#f2f4f8;
+      --muted:#aab3c2;
+      --border: rgba(255,255,255,.10);
+      --accent:#d9b26b;
+      --ok:#7ee787;
+      --danger:#ff6b6b;
+
+      --radius:16px;
+      --shadow:0 22px 60px rgba(0,0,0,.62);
+      --wrap:min(920px, calc(100% - 28px));
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body { height:100%; }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        linear-gradient(180deg, rgba(11,13,18,.70), rgba(11,13,18,.86)),
+        var(--bg-image),
+        var(--bg);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      padding: 18px 0 40px;
+    }
+
+    header{
+      width:var(--wrap);
+      margin:0 auto 12px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .title{ display:flex; flex-direction:column; gap:6px; }
+    h1{ margin:0; font-size:20px; letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:13px; line-height:1.35; }
+
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .pill strong{ color:var(--text); font-weight:800; font-family:var(--mono); }
+
+    .tabs{
+      width:var(--wrap);
+      margin:0 auto 12px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tab{
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.20);
+      backdrop-filter: blur(10px);
+      padding:10px 12px;
+      border-radius:999px;
+      font-size:13px;
+      color:var(--text);
+      cursor:pointer;
+      user-select:none;
+    }
+    .tab[aria-selected="true"]{
+      border-color: rgba(217,178,107,.45);
+      background: rgba(217,178,107,.14);
+    }
+
+    main{
+      width:var(--wrap);
+      margin:0 auto;
+      display:grid;
+      gap:12px;
+    }
+    .card{
+      background: linear-gradient(180deg, var(--glass2), var(--glass));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      backdrop-filter: blur(10px);
+    }
+    .row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .small{ font-size:12px; color:var(--muted); }
+    .mono{ font-family:var(--mono); }
+
+    /* Today steps */
+    .steps{ margin-top:10px; display:grid; gap:10px; }
+    label.step{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.16);
+    }
+    input[type="checkbox"]{ width:18px; height:18px; accent-color: var(--accent); }
+    .step span{ flex:1; font-size:14px; }
+    .tag{
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,.12);
+      padding:3px 7px;
+      border-radius:999px;
+    }
+
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    button{
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      padding:10px 12px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    button:hover{ border-color: rgba(217,178,107,.40); }
+    button.primary{
+      background: rgba(217,178,107,.16);
+      border-color: rgba(217,178,107,.45);
+    }
+    button.danger{
+      background: rgba(255,107,107,.12);
+      border-color: rgba(255,107,107,.35);
+    }
+    input[type="file"]{ display:none; }
+
+    /* Photo thumbs */
+    #photoGrid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+    }
+    @media (max-width: 520px){
+      #photoGrid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .thumb{
+      position:relative;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      background:rgba(0,0,0,.18);
+      min-height:110px;
+      cursor:pointer;
+    }
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .thumb .x{
+      position:absolute;
+      top:6px; right:6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.55);
+      color:var(--text);
+      font-size:12px;
+      padding:6px 9px;
+      cursor:pointer;
+    }
+
+    /* Fullscreen viewer */
+    .viewer{
+      position:fixed; inset:0; z-index:9999;
+      background:rgba(0,0,0,.92);
+      display:flex; flex-direction:column;
+    }
+
+    /* History list */
+    .history{
+      margin-top:10px;
+      display:grid;
+      gap:8px;
+      max-height:260px;
+      overflow:auto;
+      padding-right:6px;
+    }
+    .day{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.14);
+      cursor:pointer;
+    }
+    .day .left{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .day .date{ font-family:var(--mono); font-size:12px; color:var(--muted); }
+    .day .preview{
+      font-size:13px;
+      color:var(--text);
+      opacity:.9;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:560px;
+    }
+    .score{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .dot{
+      width:9px;height:9px;border-radius:99px;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .dot.ok{ background: rgba(126,231,135,.35); border-color: rgba(126,231,135,.35); }
+
+    /* Calendar */
+    .cal-wrap{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+      grid-template-columns: 1.2fr .8fr;
+    }
+    @media (max-width: 860px){
+      .cal-wrap{ grid-template-columns: 1fr; }
+    }
+    .cal{
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.14);
+      border-radius:14px;
+      padding:12px;
+    }
+    .cal-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .cal-title{
+      font-family:var(--mono);
+      font-size:13px;
+      color:var(--text);
+    }
+    .cal-grid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:6px;
+    }
+    .dow{
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+      text-align:center;
+      padding:6px 0;
+    }
+    .cell{
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.12);
+      border-radius:12px;
+      min-height:56px;
+      padding:8px;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+    .cell:hover{ border-color: rgba(217,178,107,.30); }
+    .cell .n{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--text);
+      opacity:.9;
+    }
+    .cell.muted .n{ color:var(--muted); opacity:.7; }
+    .cell.selected{ outline: 2px solid rgba(217,178,107,.42); }
+    .marks{
+      position:absolute;
+      left:8px; right:8px; bottom:6px;
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+      opacity:.95;
+    }
+    .mark{
+      width:7px; height:7px;
+      border-radius:99px;
+      background: rgba(217,178,107,.55);
+      border:1px solid rgba(217,178,107,.40);
+    }
+    .events{
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.14);
+      border-radius:14px;
+      padding:12px;
+    }
+    .event{
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.12);
+      border-radius:12px;
+      padding:10px;
+      margin-top:8px;
+    }
+    .event .t{ font-size:13px; }
+    .event .d{ margin-top:6px; font-size:12px; color:var(--muted); white-space:pre-wrap; }
+    .event .meta{ margin-top:8px; font-family:var(--mono); font-size:11px; color:var(--muted); }
+
+    .hide{ display:none !important; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="title">
+      <h1>Kindling</h1>
+      <div class="sub">One day at a time. Track the ritual. Upload the pages. Keep it local.</div>
+    </div>
+    <div class="pill" title="Consecutive days fully completed">
+      <span>Streak</span>
+      <strong id="streak">0</strong>
+      <span>days</span>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Kindling tabs">
+    <div class="tab" id="tab-today" role="tab" aria-selected="true" tabindex="0">Today</div>
+    <div class="tab" id="tab-journal" role="tab" aria-selected="false" tabindex="0">History</div>
+    <div class="tab" id="tab-calendar" role="tab" aria-selected="false" tabindex="0">Calendar</div>
+    <div class="tab" id="tab-settings" role="tab" aria-selected="false" tabindex="0">Settings</div>
+  </div>
+
+  <main>
+    <!-- TODAY -->
+    <section class="card" id="view-today" aria-label="Today view">
+      <div class="row">
+        <div>
+          <div class="small">Loaded day</div>
+          <div class="mono" id="todayLabel"></div>
+        </div>
+        <div class="pill" title="Daily completion">
+          <span>Done</span>
+          <strong id="doneCount">0</strong>
+          <span>/</span>
+          <strong id="totalCount">5</strong>
+        </div>
+      </div>
+
+      <div class="steps" id="steps"></div>
+
+      <div style="margin-top:12px;" class="small">
+        Journal (photo upload). Snap your handwritten entry, save it, move on.
+      </div>
+
+      <div class="btns" style="margin-top:10px;">
+        <button class="primary" id="addPhotoBtn">Add journal photo</button>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" />
+        <button id="jumpToday">Jump to today</button>
+        <button class="danger" id="resetDayBtn" title="Clears checks and photos for the loaded day">Reset this day</button>
+      </div>
+
+      <div class="small" id="photoStatus" style="margin-top:8px;"></div>
+
+      <div id="photoGrid"></div>
+    </section>
+
+    <!-- FULLSCREEN VIEWER -->
+    <div id="viewer" class="viewer hide" aria-hidden="true">
+      <div style="padding:12px; display:flex; gap:10px; align-items:center; justify-content:space-between;">
+        <div class="mono" id="viewerLabel"></div>
+        <div class="btns" style="margin:0;">
+          <button id="viewerClose">Close</button>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:12px;">
+        <img id="viewerImg" alt="Journal photo" style="max-width:100%; max-height:100%; border-radius:14px; border:1px solid rgba(255,255,255,.12);" />
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <section class="card hide" id="view-journal" aria-label="History view">
+      <div class="row">
+        <div>
+          <div class="small">History</div>
+          <div class="sub">Tap a day to load it into Today.</div>
+        </div>
+        <div class="pill">
+          <span class="mono" id="historyCount">0</span>
+          <span>days saved</span>
+        </div>
+      </div>
+      <div class="history" id="history"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="card hide" id="view-calendar" aria-label="Calendar view">
+      <div class="row">
+        <div>
+          <div class="small">Calendar</div>
+          <div class="sub">Add your own events or import an .ics file.</div>
+        </div>
+        <div class="pill">
+          <span>Events</span>
+          <strong id="eventCount">0</strong>
+        </div>
+      </div>
+
+      <div class="cal-wrap">
+        <div class="cal">
+          <div class="cal-head">
+            <button id="prevMonth" aria-label="Previous month">◀</button>
+            <div class="cal-title" id="calTitle"></div>
+            <button id="nextMonth" aria-label="Next month">▶</button>
+          </div>
+
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <div class="events">
+          <div class="row">
+            <div>
+              <div class="small">Selected day</div>
+              <div class="mono" id="selDayLabel"></div>
+            </div>
+          </div>
+
+          <div class="btns" style="margin-top:10px;">
+            <button class="primary" id="addEventBtn">Add event</button>
+            <button id="importIcsBtn">Import .ics</button>
+            <input type="file" id="icsFile" accept=".ics,text/calendar" />
+          </div>
+
+          <div id="eventsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="card hide" id="view-settings" aria-label="Settings view">
+      <div class="row">
+        <div>
+          <div class="small">Backups</div>
+          <div class="sub">Export/import routine data. Export/import photo bundle separately.</div>
+        </div>
+      </div>
+
+      <div class="btns" style="margin-top:10px;">
+        <button class="primary" id="exportBtn">Export JSON (routine/events)</button>
+        <button id="importBtn">Import JSON (routine/events)</button>
+        <input type="file" id="importFile" accept="application/json" />
+
+        <button class="primary" id="exportPhotosBtn">Export Photos Bundle</button>
+        <button id="importPhotosBtn">Import Photos Bundle</button>
+        <input type="file" id="importPhotosFile" accept="application/json" />
+
+        <button class="danger" id="wipeAllBtn" title="Deletes all local data and photos">Wipe everything</button>
+      </div>
+
+      <div class="small" style="margin-top:10px;">
+        iPhone install: open in Safari → Share → Add to Home Screen.
+      </div>
+    </section>
+  </main>
+
+<script>
+  // =========================================
+  // Local data (routine + days + events)
+  // =========================================
+  const STORAGE_KEY = "kindling_data_v3";
+
+  const DEFAULT_STEPS = [
+    { id: "sun", label: "Morning sun" },
+    { id: "altar", label: "Altar" },
+    { id: "workout", label: "Light workout" },
+    { id: "coffee", label: "Coffee" },
+    { id: "journal_step", label: "Journal photo" }
+  ];
+
+  const DEFAULT_ANCHORS = [
+    { id:"anchor-imbolc", date:"02-01", title:"Seasonal anchor: Imbolc (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-ostara", date:"03-20", title:"Seasonal anchor: Spring Equinox (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-beltane", date:"05-01", title:"Seasonal anchor: Beltane (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-litha", date:"06-20", title:"Seasonal anchor: Summer Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-lughnasadh", date:"08-01", title:"Seasonal anchor: Lughnasadh (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-mabon", date:"09-22", title:"Seasonal anchor: Autumn Equinox (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-samhain", date:"10-31", title:"Seasonal anchor: Samhain (approx)", desc:"Optional anchor. Adjust to your tradition." },
+    { id:"anchor-yule", date:"12-21", title:"Seasonal anchor: Winter Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." }
+  ];
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { steps: DEFAULT_STEPS, days: {}, events: [], anchorsSeeded: false };
+      const d = JSON.parse(raw);
+      if (!d.steps || !d.days) throw new Error("bad");
+      if (!Array.isArray(d.events)) d.events = [];
+      if (typeof d.anchorsSeeded !== "boolean") d.anchorsSeeded = false;
+      return d;
+    } catch {
+      return { steps: DEFAULT_STEPS, days: {}, events: [], anchorsSeeded: false };
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function ymd(date = new Date()) {
+    const d = new Date(date);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function prettyDate(ymdStr) {
+    const [y,m,d] = ymdStr.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString(undefined, { weekday:"short", year:"numeric", month:"short", day:"numeric" });
+  }
+
+  function ensureDay(dateKey) {
+    if (!data.days[dateKey]) {
+      data.days[dateKey] = {
+        checks: Object.fromEntries(data.steps.map(s => [s.id, false])),
+        updatedAt: new Date().toISOString()
+      };
+    } else {
+      for (const s of data.steps) {
+        if (!(s.id in data.days[dateKey].checks)) data.days[dateKey].checks[s.id] = false;
+      }
+    }
+    return data.days[dateKey];
+  }
+
+  function computeDone(dayObj) {
+    const total = data.steps.length;
+    let done = 0;
+    for (const s of data.steps) if (dayObj.checks[s.id]) done++;
+    return { done, total };
+  }
+
+  function computeStreak() {
+    const activeSteps = data.steps.length;
+    let streak = 0;
+    let cursor = ymd();
+    while (true) {
+      const day = data.days[cursor];
+      if (!day) break;
+      const { done } = computeDone(day);
+      if (done !== activeSteps) break;
+      streak++;
+      const dt = new Date(cursor + "T00:00:00");
+      dt.setDate(dt.getDate() - 1);
+      cursor = ymd(dt);
+    }
+    return streak;
+  }
+
+  // =========================================
+  // IndexedDB for journal photos (blobs)
+  // =========================================
+  const DB_NAME = "kindling_photos_db";
+  const DB_VER = 1;
+  const STORE = "photos";
+  // record: { id, date, createdAt, blob }
+
+  function openPhotoDB(){
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(STORE)) {
+          const store = db.createObjectStore(STORE, { keyPath: "id" });
+          store.createIndex("by_date", "date", { unique:false });
+          store.createIndex("by_created", "createdAt", { unique:false });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function pid() {
+    return "p_" + Date.now().toString(16) + "_" + Math.random().toString(16).slice(2);
+  }
+
+  async function addPhoto(dateKey, blob){
+    const db = await openPhotoDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readwrite");
+      const store = tx.objectStore(STORE);
+      const rec = { id: pid(), date: dateKey, createdAt: new Date().toISOString(), blob };
+      const req = store.add(rec);
+      req.onsuccess = () => resolve(rec.id);
+      req.onerror = () => reject(req.error);
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function listPhotos(dateKey){
+    const db = await openPhotoDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readonly");
+      const idx = tx.objectStore(STORE).index("by_date");
+      const req = idx.getAll(dateKey);
+      req.onsuccess = () => resolve((req.result || []).sort((a,b)=> (a.createdAt||"").localeCompare(b.createdAt||"")));
+      req.onerror = () => reject(req.error);
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function getPhoto(id){
+    const db = await openPhotoDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readonly");
+      const req = tx.objectStore(STORE).get(id);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function deletePhoto(id){
+    const db = await openPhotoDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readwrite");
+      const req = tx.objectStore(STORE).delete(id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function deletePhotosByDate(dateKey){
+    const photos = await listPhotos(dateKey);
+    for (const p of photos) await deletePhoto(p.id);
+  }
+
+  // Photo bundle export/import (JSON with base64 images)
+  function blobToDataURL(blob){
+    return new Promise((resolve) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.readAsDataURL(blob);
+    });
+  }
+  function dataURLToBlob(dataURL){
+    const parts = dataURL.split(",");
+    const meta = parts[0];
+    const b64 = parts[1];
+    const mimeMatch = meta.match(/data:(.*);base64/);
+    const mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+    const bin = atob(b64);
+    const len = bin.length;
+    const arr = new Uint8Array(len);
+    for (let i=0;i<len;i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: mime });
+  }
+
+  async function exportPhotoBundle(){
+    const db = await openPhotoDB();
+    const all = await new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE, "readonly");
+      const store = tx.objectStore(STORE);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+      tx.oncomplete = () => db.close();
+    });
+
+    const packed = [];
+    for (const rec of all) {
+      const dataURL = await blobToDataURL(rec.blob);
+      packed.push({
+        id: rec.id,
+        date: rec.date,
+        createdAt: rec.createdAt,
+        dataURL
+      });
+    }
+
+    return { version: 1, exportedAt: new Date().toISOString(), photos: packed };
+  }
+
+  async function importPhotoBundle(bundle){
+    if (!bundle || !Array.isArray(bundle.photos)) throw new Error("bad bundle");
+    // naive: add all. (IDs may collide; we remap IDs.)
+    for (const p of bundle.photos) {
+      const blob = dataURLToBlob(p.dataURL);
+      await addPhoto(p.date, blob);
+    }
+  }
+
+  // =========================================
+  // Events/calendar
+  // =========================================
+  function seedAnchorsIfNeeded() {
+    if (data.anchorsSeeded) return;
+    const year = new Date().getFullYear();
+    for (const a of DEFAULT_ANCHORS) {
+      const date = `${year}-${a.date}`;
+      data.events.push({
+        id: a.id + "-" + year,
+        date,
+        title: a.title,
+        desc: a.desc,
+        source: "anchor"
+      });
+    }
+    data.anchorsSeeded = true;
+    saveData();
+  }
+
+  function uid(prefix="e") {
+    return prefix + "_" + Date.now().toString(16) + "_" + Math.random().toString(16).slice(2);
+  }
+
+  function getEventsForDate(dateKey) {
+    return data.events
+      .filter(e => e.date === dateKey)
+      .sort((a,b) => (a.title || "").localeCompare(b.title || ""));
+  }
+
+  function countEvents() {
+    return data.events.length;
+  }
+
+  function addEvent(dateKey, title, desc, source="manual") {
+    data.events.push({
+      id: uid("evt"),
+      date: dateKey,
+      title: title.trim(),
+      desc: (desc || "").trim(),
+      source
+    });
+    saveData();
+  }
+
+  function deleteEvent(id) {
+    data.events = data.events.filter(e => e.id !== id);
+    saveData();
+  }
+
+  function parseIcs(text) {
+    const lines = text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n");
+    const unfolded = [];
+    for (const line of lines) {
+      if (line.startsWith(" ") || line.startsWith("\t")) {
+        if (unfolded.length) unfolded[unfolded.length-1] += line.slice(1);
+      } else {
+        unfolded.push(line);
+      }
+    }
+
+    const events = [];
+    let cur = null;
+
+    for (const line of unfolded) {
+      if (line === "BEGIN:VEVENT") { cur = {}; continue; }
+      if (line === "END:VEVENT") {
+        if (cur && cur.date && cur.title) events.push(cur);
+        cur = null;
+        continue;
+      }
+      if (!cur) continue;
+
+      const [rawKey, rawVal] = line.split(":", 2);
+      if (!rawKey || rawVal == null) continue;
+
+      const key = rawKey.split(";")[0].toUpperCase();
+      const val = rawVal.trim();
+
+      if (key === "DTSTART") {
+        const m = val.match(/^(\d{4})(\d{2})(\d{2})/);
+        if (m) cur.date = `${m[1]}-${m[2]}-${m[3]}`;
+      }
+      if (key === "SUMMARY") cur.title = val;
+      if (key === "DESCRIPTION") cur.desc = val.replace(/\\n/g, "\n");
+    }
+    return events;
+  }
+
+  // =========================================
+  // UI bindings
+  // =========================================
+  const el = (id) => document.getElementById(id);
+
+  const tabs = [
+    { tab: el("tab-today"), view: el("view-today") },
+    { tab: el("tab-journal"), view: el("view-journal") },
+    { tab: el("tab-calendar"), view: el("view-calendar") },
+    { tab: el("tab-settings"), view: el("view-settings") }
+  ];
+
+  function setTab(activeId) {
+    for (const t of tabs) {
+      const on = t.tab.id === activeId;
+      t.tab.setAttribute("aria-selected", on ? "true" : "false");
+      t.view.classList.toggle("hide", !on);
+    }
+  }
+
+  // Today
+  const stepsEl = el("steps");
+  const todayLabelEl = el("todayLabel");
+  const doneCountEl = el("doneCount");
+  const totalCountEl = el("totalCount");
+  const streakEl = el("streak");
+  const photoStatusEl = el("photoStatus");
+  const photoGridEl = el("photoGrid");
+  const addPhotoBtn = el("addPhotoBtn");
+  const photoInput = el("photoInput");
+
+  // Viewer
+  const viewer = el("viewer");
+  const viewerImg = el("viewerImg");
+  const viewerLabel = el("viewerLabel");
+  const viewerClose = el("viewerClose");
+
+  // History
+  const historyEl = el("history");
+  const historyCountEl = el("historyCount");
+
+  // Calendar
+  const calTitleEl = el("calTitle");
+  const calGridEl = el("calGrid");
+  const selDayLabelEl = el("selDayLabel");
+  const eventsListEl = el("eventsList");
+  const eventCountEl = el("eventCount");
+
+  let data = loadData();
+  seedAnchorsIfNeeded();
+
+  let currentDate = ymd();      // loaded into Today view
+  let calMonth = new Date();    // month shown
+  let calSelected = ymd();      // selected day
+
+  function renderStreak() {
+    streakEl.textContent = computeStreak();
+  }
+
+  function renderCounts() {
+    const dayObj = ensureDay(currentDate);
+    const { done, total } = computeDone(dayObj);
+    doneCountEl.textContent = done;
+    totalCountEl.textContent = total;
+  }
+
+  async function renderPhotos(){
+    photoGridEl.innerHTML = "";
+    const photos = await listPhotos(currentDate);
+
+    if (!photos.length) {
+      const empty = document.createElement("div");
+      empty.className = "small";
+      empty.textContent = "No journal photos for this day yet.";
+      photoGridEl.appendChild(empty);
+      return;
+    }
+
+    for (const p of photos) {
+      const url = URL.createObjectURL(p.blob);
+
+      const wrap = document.createElement("div");
+      wrap.className = "thumb";
+
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "Journal page";
+
+      wrap.addEventListener("click", () => {
+        viewerLabel.textContent = prettyDate(currentDate);
+        viewerImg.src = url;
+        viewer.classList.remove("hide");
+        viewer.setAttribute("aria-hidden", "false");
+      });
+
+      const del = document.createElement("button");
+      del.className = "x";
+      del.textContent = "✕";
+      del.title = "Delete";
+      del.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        if (!confirm("Delete this photo?")) return;
+        URL.revokeObjectURL(url);
+        await deletePhoto(p.id);
+        await renderPhotos();
+      });
+
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+      photoGridEl.appendChild(wrap);
+    }
+  }
+
+  function renderToday() {
+    ensureDay(currentDate);
+    todayLabelEl.textContent = prettyDate(currentDate);
+
+    stepsEl.innerHTML = "";
+    const dayObj = ensureDay(currentDate);
+
+    for (const step of data.steps) {
+      const label = document.createElement("label");
+      label.className = "step";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = !!dayObj.checks[step.id];
+      cb.addEventListener("change", () => {
+        dayObj.checks[step.id] = cb.checked;
+        dayObj.updatedAt = new Date().toISOString();
+        saveData();
+        renderCounts();
+        renderStreak();
+        renderHistory();
+      });
+
+      const text = document.createElement("span");
+      text.textContent = step.label;
+
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = cb.checked ? "done" : "open";
+      cb.addEventListener("change", () => {
+        tag.textContent = cb.checked ? "done" : "open";
+      });
+
+      label.appendChild(cb);
+      label.appendChild(text);
+      label.appendChild(tag);
+      stepsEl.appendChild(label);
+    }
+
+    renderCounts();
+    renderStreak();
+    renderPhotos();
+  }
+
+  function renderHistory() {
+    const keys = Object.keys(data.days).sort().reverse();
+    historyCountEl.textContent = keys.length;
+    historyEl.innerHTML = "";
+
+    if (keys.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "small";
+      empty.textContent = "No history yet. Today is Day 1.";
+      historyEl.appendChild(empty);
+      return;
+    }
+
+    for (const k of keys.slice(0, 120)) {
+      const day = data.days[k];
+      const { done, total } = computeDone(day);
+      const allDone = done === total;
+
+      const row = document.createElement("div");
+      row.className = "day";
+      row.addEventListener("click", () => {
+        currentDate = k;
+        renderToday();
+        setTab("tab-today");
+      });
+
+      const left = document.createElement("div");
+      left.className = "left";
+
+      const dateEl = document.createElement("div");
+      dateEl.className = "date";
+      dateEl.textContent = k + "  •  " + prettyDate(k);
+
+      const preview = document.createElement("div");
+      preview.className = "preview";
+      preview.textContent = "Tap to load this day";
+
+      left.appendChild(dateEl);
+      left.appendChild(preview);
+
+      const score = document.createElement("div");
+      score.className = "score";
+
+      const dot = document.createElement("span");
+      dot.className = "dot" + (allDone ? " ok" : "");
+      score.appendChild(dot);
+
+      const txt = document.createElement("span");
+      txt.textContent = `${done}/${total}`;
+      score.appendChild(txt);
+
+      row.appendChild(left);
+      row.appendChild(score);
+
+      if (k === ymd()) row.style.borderColor = "rgba(217,178,107,.35)";
+      historyEl.appendChild(row);
+    }
+  }
+
+  function monthLabel(dt) {
+    return dt.toLocaleDateString(undefined, { month:"long", year:"numeric" });
+  }
+
+  function renderCalendar() {
+    eventCountEl.textContent = countEvents();
+
+    const year = calMonth.getFullYear();
+    const month = calMonth.getMonth();
+    calTitleEl.textContent = monthLabel(calMonth);
+
+    calGridEl.innerHTML = "";
+    const dows = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    for (const d of dows) {
+      const h = document.createElement("div");
+      h.className = "dow";
+      h.textContent = d;
+      calGridEl.appendChild(h);
+    }
+
+    const firstOfMonth = new Date(year, month, 1);
+    const startDay = firstOfMonth.getDay();
+    const gridStart = new Date(year, month, 1 - startDay);
+
+    for (let i=0; i<42; i++) {
+      const dt = new Date(gridStart);
+      dt.setDate(gridStart.getDate() + i);
+
+      const cellYMD = ymd(dt);
+      const inMonth = dt.getMonth() === month;
+
+      const cell = document.createElement("div");
+      cell.className = "cell" + (inMonth ? "" : " muted") + (cellYMD === calSelected ? " selected" : "");
+      cell.addEventListener("click", () => {
+        calSelected = cellYMD;
+        renderCalendar();
+        renderEventsPanel();
+      });
+
+      const n = document.createElement("div");
+      n.className = "n";
+      n.textContent = dt.getDate();
+      cell.appendChild(n);
+
+      const todays = getEventsForDate(cellYMD);
+      if (todays.length) {
+        const marks = document.createElement("div");
+        marks.className = "marks";
+        for (let m=0; m<Math.min(6, todays.length); m++){
+          const mark = document.createElement("span");
+          mark.className = "mark";
+          marks.appendChild(mark);
+        }
+        cell.appendChild(marks);
+      }
+
+      calGridEl.appendChild(cell);
+    }
+
+    renderEventsPanel();
+  }
+
+  function renderEventsPanel() {
+    selDayLabelEl.textContent = prettyDate(calSelected);
+    const evs = getEventsForDate(calSelected);
+
+    eventsListEl.innerHTML = "";
+    if (!evs.length) {
+      const empty = document.createElement("div");
+      empty.className = "small";
+      empty.style.marginTop = "10px";
+      empty.textContent = "No events for this day.";
+      eventsListEl.appendChild(empty);
+      return;
+    }
+
+    for (const e of evs) {
+      const wrap = document.createElement("div");
+      wrap.className = "event";
+
+      const t = document.createElement("div");
+      t.className = "t";
+      t.textContent = e.title || "(untitled)";
+
+      const d = document.createElement("div");
+      d.className = "d";
+      d.textContent = e.desc || "";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = `source: ${e.source}`;
+
+      const btnRow = document.createElement("div");
+      btnRow.className = "btns";
+      btnRow.style.marginTop = "10px";
+
+      const del = document.createElement("button");
+      del.className = "danger";
+      del.textContent = "Delete";
+      del.addEventListener("click", () => {
+        deleteEvent(e.id);
+        renderCalendar();
+      });
+
+      btnRow.appendChild(del);
+
+      wrap.appendChild(t);
+      if (e.desc) wrap.appendChild(d);
+      wrap.appendChild(meta);
+      wrap.appendChild(btnRow);
+      eventsListEl.appendChild(wrap);
+    }
+  }
+
+  // =========================================
+  // Controls
+  // =========================================
+  el("tab-today").addEventListener("click", () => setTab("tab-today"));
+  el("tab-journal").addEventListener("click", () => setTab("tab-journal"));
+  el("tab-calendar").addEventListener("click", () => setTab("tab-calendar"));
+  el("tab-settings").addEventListener("click", () => setTab("tab-settings"));
+
+  el("jumpToday").addEventListener("click", () => {
+    currentDate = ymd();
+    renderToday();
+    photoStatusEl.textContent = "";
+  });
+
+  el("resetDayBtn").addEventListener("click", async () => {
+    if (!confirm("Reset this day? This clears checks and ALL photos for the loaded day.")) return;
+    const dayObj = ensureDay(currentDate);
+    for (const s of data.steps) dayObj.checks[s.id] = false;
+    dayObj.updatedAt = new Date().toISOString();
+    saveData();
+    await deletePhotosByDate(currentDate);
+    renderToday();
+    renderHistory();
+    renderStreak();
+    photoStatusEl.textContent = "Reset.";
+  });
+
+  // Photo add
+  addPhotoBtn.addEventListener("click", () => photoInput.click());
+  photoInput.addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    try {
+      photoStatusEl.textContent = "Saving photo...";
+      await addPhoto(currentDate, file);
+      // Auto-check "Journal photo" step
+      const dayObj = ensureDay(currentDate);
+      dayObj.checks["journal_step"] = true;
+      dayObj.updatedAt = new Date().toISOString();
+      saveData();
+      renderCounts();
+      renderStreak();
+      await renderPhotos();
+      photoStatusEl.textContent = "Saved.";
+    } catch {
+      photoStatusEl.textContent = "Failed to save photo.";
+    } finally {
+      e.target.value = "";
+    }
+  });
+
+  // Viewer
+  viewerClose.addEventListener("click", () => {
+    viewer.classList.add("hide");
+    viewer.setAttribute("aria-hidden", "true");
+    viewerImg.src = "";
+  });
+
+  // Calendar nav
+  el("prevMonth").addEventListener("click", () => {
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1);
+    renderCalendar();
+  });
+  el("nextMonth").addEventListener("click", () => {
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1);
+    renderCalendar();
+  });
+
+  // Add event
+  el("addEventBtn").addEventListener("click", () => {
+    const title = prompt("Event title");
+    if (!title) return;
+    const desc = prompt("Notes (optional)") || "";
+    addEvent(calSelected, title, desc, "manual");
+    renderCalendar();
+  });
+
+  // Import ICS
+  el("importIcsBtn").addEventListener("click", () => el("icsFile").click());
+  el("icsFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    const parsed = parseIcs(text);
+
+    if (!parsed.length) {
+      alert("No events found in that file.");
+      e.target.value = "";
+      return;
+    }
+
+    let added = 0;
+    for (const p of parsed) {
+      addEvent(p.date, p.title, p.desc || "", "ics");
+      added++;
+    }
+    alert(`Imported ${added} events.`);
+    e.target.value = "";
+    renderCalendar();
+  });
+
+  // Export/Import routine/events JSON
+  el("exportBtn").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kindling-backup-${ymd()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  el("importBtn").addEventListener("click", () => el("importFile").click());
+  el("importFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const imported = JSON.parse(text);
+      if (!imported.steps || !imported.days) throw new Error("Invalid backup");
+      data = imported;
+      if (!Array.isArray(data.events)) data.events = [];
+      if (typeof data.anchorsSeeded !== "boolean") data.anchorsSeeded = false;
+      saveData();
+      alert("Import complete.");
+      currentDate = ymd();
+      calSelected = ymd();
+      calMonth = new Date();
+      seedAnchorsIfNeeded();
+      renderAll();
+    } catch {
+      alert("Import failed. Wrong file format.");
+    } finally {
+      e.target.value = "";
+    }
+  });
+
+  // Export/Import photo bundle
+  el("exportPhotosBtn").addEventListener("click", async () => {
+    const bundle = await exportPhotoBundle();
+    const blob = new Blob([JSON.stringify(bundle)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `kindling-photos-${ymd()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  el("importPhotosBtn").addEventListener("click", () => el("importPhotosFile").click());
+  el("importPhotosFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const bundle = JSON.parse(text);
+      await importPhotoBundle(bundle);
+      alert("Photo bundle imported.");
+      await renderPhotos();
+    } catch {
+      alert("Import failed. Wrong photo bundle format.");
+    } finally {
+      e.target.value = "";
+    }
+  });
+
+  // Wipe everything
+  el("wipeAllBtn").addEventListener("click", async () => {
+    if (!confirm("Wipe everything? This deletes all routine data AND all stored photos on this device.")) return;
+    localStorage.removeItem(STORAGE_KEY);
+
+    // Delete IndexedDB database
+    await new Promise((resolve) => {
+      const req = indexedDB.deleteDatabase(DB_NAME);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(true);
+      req.onblocked = () => resolve(true);
+    });
+
+    data = loadData();
+    seedAnchorsIfNeeded();
+    currentDate = ymd();
+    calSelected = ymd();
+    calMonth = new Date();
+    renderAll();
+  });
+
+  async function renderAll() {
+    renderToday();
+    renderHistory();
+    renderCalendar();
+    renderStreak();
+  }
+
+  // Init
+  renderAll();
+  setTab("tab-today");
+
+  // Service worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
