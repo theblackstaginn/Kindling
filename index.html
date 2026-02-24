@@ -29,19 +29,36 @@
     *{ box-sizing:border-box; }
     html, body { height:100%; }
 
+    /* iOS-safe fixed background layer */
     body{
       margin:0;
       font-family:var(--sans);
       color:var(--text);
-      background:
-        linear-gradient(180deg, rgba(11,13,18,.65), rgba(11,13,18,.85)),
-        var(--bg-image),
-        var(--bg);
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
+      background: var(--bg);
       -webkit-font-smoothing: antialiased;
       padding:18px 0 40px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transform: translateZ(0);
+      will-change: transform;
+      z-index: -2;
+    }
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11,13,18,.65), rgba(11,13,18,.88));
+      z-index: -1;
+      pointer-events:none;
     }
 
     header{
@@ -51,6 +68,8 @@
       align-items:flex-end;
       justify-content:space-between;
       gap:12px;
+      position: relative;
+      z-index: 1;
     }
     .title{ display:flex; flex-direction:column; gap:6px; }
     h1{ margin:0; font-size:20px; letter-spacing:.2px; }
@@ -76,6 +95,8 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
+      position: relative;
+      z-index: 1;
     }
     .tab{
       border:1px solid var(--border);
@@ -97,9 +118,10 @@
       margin:0 auto;
       display:grid;
       gap:12px;
+      position: relative;
+      z-index: 1;
     }
 
-    /* Fully transparent cards/panels */
     .card{
       background: transparent;
       border:1px solid var(--border);
@@ -158,7 +180,7 @@
       display:flex;
       align-items:center;
       gap:10px;
-      margin-top:8px;
+      margin-top:10px;
     }
 
     input[type="checkbox"]{
@@ -448,24 +470,19 @@
           </label>
         </div>
 
-        <!-- Coffee -->
-        <div class="section" id="sec-coffee">
+        <!-- Coffee + Journal (combined section) -->
+        <div class="section" id="sec-coffee-journal">
           <div class="section-head">
-            <div class="section-title">Coffee</div>
+            <div class="section-title">Coffee + Journal</div>
           </div>
+
           <div class="section-body" id="coffeeText">Slow brew. Sit upright. No scrolling. Decide your one win for today.</div>
           <label class="checkline">
             <input type="checkbox" id="chk-coffee" />
-            <span>Done</span>
+            <span>Coffee done</span>
           </label>
-        </div>
 
-        <!-- Journal Photos -->
-        <div class="section" id="sec-journal">
-          <div class="section-head">
-            <div class="section-title">Journal Photos</div>
-          </div>
-          <div class="section-body">Snap your handwritten page. Stored locally on this device.</div>
+          <div class="section-body" style="margin-top:10px;">Snap your handwritten page. Stored locally on this device.</div>
 
           <div class="btns">
             <button class="primary" id="addPhotoBtn">Add journal photo</button>
@@ -479,7 +496,7 @@
 
           <label class="checkline">
             <input type="checkbox" id="chk-journal_step" />
-            <span>Done</span>
+            <span>Journal done</span>
           </label>
         </div>
 
@@ -589,7 +606,7 @@
   // =========================================
   // Local data (routine + days + events)
   // =========================================
-  const STORAGE_KEY = "kindling_data_v4";
+  const STORAGE_KEY = "kindling_data_v5";
 
   const DEFAULT_STEPS = [
     { id: "sun", label: "Morning Sun" },
@@ -610,7 +627,7 @@
     { id:"anchor-yule", date:"12-21", title:"Seasonal anchor: Winter Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." }
   ];
 
-  // Day-based workouts (simple, equipment-light, progressive via reps/time)
+  // Day-based workouts (simple, equipment-light)
   const WORKOUTS = {
     0: { name: "Sunday — Mobility + Walk", text:
 `Mobility (10 minutes)
@@ -683,7 +700,6 @@ C) Hill sprints: 6–10 hard efforts (full rest)` },
 Progression: add reps weekly or add a loaded backpack.` }
   };
 
-  // Daily altar ritual (short, consistent)
   function altarRitualText() {
     return `1) Light (candle/incense). One minute in silence.
 2) Ground (hand on stone/wood/earth). Feel weight and breath.
