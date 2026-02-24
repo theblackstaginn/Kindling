@@ -56,7 +56,7 @@
       content:"";
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, rgba(11,13,18,.65), rgba(11,13,18,.88));
+      background: linear-gradient(180deg, rgba(11,13,18,.60), rgba(11,13,18,.88));
       z-index: -1;
       pointer-events:none;
     }
@@ -73,7 +73,7 @@
     }
     .title{ display:flex; flex-direction:column; gap:6px; }
     h1{ margin:0; font-size:20px; letter-spacing:.2px; }
-    .sub{ color:var(--muted); font-size:13px; line-height:1.35; }
+    .sub{ color:var(--muted); font-size:13px; line-height:1.35; max-width: 56ch; }
 
     .pill{
       border:1px solid var(--border);
@@ -255,7 +255,7 @@
       margin-top:10px;
       display:grid;
       gap:8px;
-      max-height:260px;
+      max-height:320px;
       overflow:auto;
       padding-right:6px;
     }
@@ -428,7 +428,7 @@
 
       <div class="sections">
 
-        <!-- Morning Sun + Grounding (combined) -->
+        <!-- Morning Sun + Grounding -->
         <div class="section" id="sec-sun-ground">
           <div class="section-head">
             <div class="section-title">Sun + Grounding (Outdoor)</div>
@@ -438,6 +438,29 @@
             <input type="checkbox" id="chk-sun" />
             <span>Done</span>
           </label>
+        </div>
+
+        <!-- Daily Correspondences -->
+        <div class="section" id="sec-cotd">
+          <div class="section-head">
+            <div class="section-title">Daily Correspondences</div>
+            <div class="small mono" id="cotdDate"></div>
+          </div>
+
+          <div class="section-body">
+            <div><span class="small">Color of the Day:</span> <strong id="cotdColor">—</strong></div>
+            <div class="small" id="cotdMeaning" style="margin-top:6px;"></div>
+
+            <div id="moonWrap" style="margin-top:10px;">
+              <div><span class="small">Moon:</span> <strong id="moonPhase"></strong> <span class="small mono" id="moonTime"></span></div>
+              <div class="small" id="moonMeaning" style="margin-top:6px;"></div>
+            </div>
+
+            <div id="notesWrap" style="margin-top:10px;">
+              <div class="small">Notes:</div>
+              <div id="cotdNotes" class="small" style="margin-top:6px; white-space:pre-wrap;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Altar (indoors) -->
@@ -465,7 +488,7 @@
           </label>
         </div>
 
-        <!-- Coffee + Journal (combined section) -->
+        <!-- Coffee + Journal (combined) -->
         <div class="section" id="sec-coffee-journal">
           <div class="section-head">
             <div class="section-title">Coffee + Journal</div>
@@ -531,7 +554,7 @@
       <div class="row">
         <div>
           <div class="small">Calendar</div>
-          <div class="sub">Manual events + .ics import. (We are not bundling copyrighted calendars.)</div>
+          <div class="sub">Manual events + .ics import.</div>
         </div>
         <div class="pill">
           <span>Events</span>
@@ -574,7 +597,7 @@
       <div class="row">
         <div>
           <div class="small">Backups</div>
-          <div class="sub">Export/import routine/events. Export/import photo bundle separately.</div>
+          <div class="sub">Export/import routine + events. Photos export/import separately.</div>
         </div>
       </div>
 
@@ -598,7 +621,7 @@
   </main>
 
 <script>
-  const STORAGE_KEY = "kindling_data_v6";
+  const STORAGE_KEY = "kindling_data_v7";
 
   const DEFAULT_STEPS = [
     { id: "sun", label: "Sun + Grounding" },
@@ -608,16 +631,75 @@
     { id: "journal_step", label: "Journal Photos" }
   ];
 
-  const DEFAULT_ANCHORS = [
-    { id:"anchor-imbolc", date:"02-01", title:"Seasonal anchor: Imbolc (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-ostara", date:"03-20", title:"Seasonal anchor: Spring Equinox (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-beltane", date:"05-01", title:"Seasonal anchor: Beltane (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-litha", date:"06-20", title:"Seasonal anchor: Summer Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-lughnasadh", date:"08-01", title:"Seasonal anchor: Lughnasadh (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-mabon", date:"09-22", title:"Seasonal anchor: Autumn Equinox (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-samhain", date:"10-31", title:"Seasonal anchor: Samhain (approx)", desc:"Optional anchor. Adjust to your tradition." },
-    { id:"anchor-yule", date:"12-21", title:"Seasonal anchor: Winter Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." }
-  ];
+  // === Feb 2026 — extracted from your physical calendar photo ===
+  const COTD = {
+    "2026-02-01": { color: "Gold", moon: { phase: "Full Moon", time: "5:09 pm" } },
+    "2026-02-02": { color: "Lavender", notes: ["Imbolc", "Groundhog Day"] },
+    "2026-02-03": { color: "Maroon" },
+    "2026-02-04": { color: "Brown" },
+    "2026-02-05": { color: "White" },
+    "2026-02-06": { color: "Pink" },
+    "2026-02-07": { color: "Gray" },
+
+    "2026-02-08": { color: "Orange" },
+    "2026-02-09": { color: "Silver", moon: { phase: "Fourth Quarter", time: "7:43 am" } },
+    "2026-02-10": { color: "Black" },
+    "2026-02-11": { color: "Yellow" },
+    "2026-02-12": { color: "Turquoise" },
+    "2026-02-13": { color: "Rose" },
+    "2026-02-14": { color: "Indigo", notes: ["Valentine's Day"] },
+
+    "2026-02-15": { color: "Yellow" },
+    "2026-02-16": { color: "Ivory", notes: ["Presidents' Day"] },
+    "2026-02-17": { color: "Scarlet", moon: { phase: "New Moon" }, notes: ["Lunar New Year (Horse)", "Ramadan begins at sundown", "Mardi Gras (Fat Tuesday)", "Solar Eclipse (noted on calendar)"] },
+    "2026-02-18": { color: "White", notes: ["Ash Wednesday", "Sun enters Pisces", "Celtic Tree Month of Ash begins"] },
+    "2026-02-19": { color: "Green" },
+    "2026-02-20": { color: "Purple" },
+    "2026-02-21": { color: "Black" },
+
+    "2026-02-22": { color: "Gold" },
+    "2026-02-23": { color: "Gray" },
+    "2026-02-24": { color: "White", moon: { phase: "Second Quarter", time: "7:28 am" } },
+    "2026-02-25": { color: "Topaz" },
+    "2026-02-26": { color: "Crimson" },
+    "2026-02-27": { color: "Coral" },
+    "2026-02-28": { color: "Blue" }
+  };
+
+  const COLOR_MEANINGS = {
+    red: "Courage, drive, strength. Use for decisive action and cutting hesitation.",
+    scarlet: "Power + momentum. Use when you need a strong push forward.",
+    maroon: "Deep will and endurance. Use for long projects and staying steady.",
+    crimson: "Bold intensity and victory energy. Use for hard conversations or breakthroughs.",
+    orange: "Attraction, social heat, creativity. Use to open doors and get seen.",
+    topaz: "Success and smart opportunity. Use for wins, sales, and strategic moves.",
+    yellow: "Intellect, confidence, travel, clarity. Use for plans and clean decisions.",
+    gold: "Authority, prosperity, “I lead.” Use for money moves and personal power.",
+    green: "Money, growth, fertility, luck. Use for compounding habits and cash flow.",
+    brown: "Stability, home, earth. Use for practical work, repairs, grounding.",
+    blue: "Wisdom, calm, healing sleep. Use for recovery and emotional cooling.",
+    indigo: "Inner vision and deep intuition. Use for divination, insight, pattern-reading.",
+    turquoise: "Protection + communication. Use for boundaries and truth-telling.",
+    purple: "Prophecy, power, astral work. Use for big vision and spiritual authority.",
+    lavender: "Dreams, peace, subtle perception. Use for nervous system downshift.",
+    pink: "Love, friendship, compassion. Use for relationship repair and softness.",
+    rose: "Romance + warmth. Use for connection and heart-forward choices.",
+    white: "Purification, peace, protection. Use for resets and clean starts.",
+    ivory: "Gentle protection + calm steadiness. Use for quiet strength days.",
+    gray: "Neutrality, balance, calm. Use for diplomacy and lowering emotional charge.",
+    silver: "Lunar intuition, neutrality, balance. Use for reflection and listening.",
+    coral: "Joyful warmth and social brightness. Use for light wins and creative play.",
+    black: "Banishing, void, hex-breaking. Use to cut cords, end cycles, and protect."
+  };
+
+  function moonMeaning(phase){
+    const p = (phase || "").toLowerCase();
+    if (p.includes("new")) return "Seed energy. Set the intention, start the habit, write the vow, begin quietly.";
+    if (p.includes("first quarter") || p.includes("second quarter")) return "Build energy. Act, iterate, and strengthen the routine.";
+    if (p.includes("fourth quarter") || p.includes("third quarter")) return "Release + refine. Cut what’s not working and simplify.";
+    if (p.includes("full")) return "Peak + completion. Finish, cleanse, charge, and close loops.";
+    return "Lunar influence noted. Use it as a modifier, not a master.";
+  }
 
   const WORKOUTS = {
     0: { name: "Sunday — Mobility + Walk", text:
@@ -702,14 +784,13 @@ Progression: add reps weekly or add a loaded backpack.` }
   function loadData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { steps: DEFAULT_STEPS, days: {}, events: [], anchorsSeeded: false };
+      if (!raw) return { steps: DEFAULT_STEPS, days: {}, events: [] };
       const d = JSON.parse(raw);
       if (!d.steps || !d.days) throw new Error("bad");
       if (!Array.isArray(d.events)) d.events = [];
-      if (typeof d.anchorsSeeded !== "boolean") d.anchorsSeeded = false;
       return d;
     } catch {
-      return { steps: DEFAULT_STEPS, days: {}, events: [], anchorsSeeded: false };
+      return { steps: DEFAULT_STEPS, days: {}, events: [] };
     }
   }
 
@@ -767,7 +848,7 @@ Progression: add reps weekly or add a loaded backpack.` }
     return streak;
   }
 
-  // IndexedDB photos
+  // === IndexedDB photos ===
   const DB_NAME = "kindling_photos_db";
   const DB_VER = 1;
   const STORE = "photos";
@@ -878,24 +959,16 @@ Progression: add reps weekly or add a loaded backpack.` }
     }
   }
 
-  // Events/calendar
-  function seedAnchorsIfNeeded() {
-    if (data.anchorsSeeded) return;
-    const year = new Date().getFullYear();
-    for (const a of DEFAULT_ANCHORS) {
-      const date = `${year}-${a.date}`;
-      data.events.push({
-        id: a.id + "-" + year,
-        date,
-        title: a.title,
-        desc: a.desc,
-        source: "anchor"
-      });
-    }
-    data.anchorsSeeded = true;
-    saveData();
+  async function wipePhotosDB(){
+    return new Promise((resolve) => {
+      const req = indexedDB.deleteDatabase(DB_NAME);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
+      req.onblocked = () => resolve(false);
+    });
   }
 
+  // === Events/calendar ===
   function uid(prefix="e") { return prefix + "_" + Date.now().toString(16) + "_" + Math.random().toString(16).slice(2); }
 
   function getEventsForDate(dateKey) {
@@ -951,7 +1024,65 @@ Progression: add reps weekly or add a loaded backpack.` }
     return events;
   }
 
-  // UI bindings
+  function downloadJSON(obj, filename){
+    const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 500);
+  }
+
+  // === Correspondences render ===
+  function renderCorrespondences(dateKey){
+    const cotdDate = document.getElementById("cotdDate");
+    const cotdColor = document.getElementById("cotdColor");
+    const cotdMeaning = document.getElementById("cotdMeaning");
+    const moonWrap = document.getElementById("moonWrap");
+    const moonPhase = document.getElementById("moonPhase");
+    const moonTime = document.getElementById("moonTime");
+    const moonMeaningEl = document.getElementById("moonMeaning");
+    const notesWrap = document.getElementById("notesWrap");
+    const cotdNotes = document.getElementById("cotdNotes");
+
+    cotdDate.textContent = dateKey;
+
+    const entry = COTD[dateKey];
+    if (!entry){
+      cotdColor.textContent = "—";
+      cotdMeaning.textContent = "No imported correspondences for this date yet.";
+      moonWrap.style.display = "none";
+      notesWrap.style.display = "none";
+      return;
+    }
+
+    const c = entry.color || "—";
+    cotdColor.textContent = c;
+
+    const meaning = COLOR_MEANINGS[c.toLowerCase()] || "Meaning not mapped yet.";
+    cotdMeaning.textContent = meaning;
+
+    if (entry.moon && entry.moon.phase){
+      moonWrap.style.display = "";
+      moonPhase.textContent = entry.moon.phase;
+      moonTime.textContent = entry.moon.time ? `(${entry.moon.time})` : "";
+      moonMeaningEl.textContent = moonMeaning(entry.moon.phase);
+    } else {
+      moonWrap.style.display = "none";
+    }
+
+    if (entry.notes && entry.notes.length){
+      notesWrap.style.display = "";
+      cotdNotes.textContent = entry.notes.map(n => `• ${n}`).join("\n");
+    } else {
+      notesWrap.style.display = "none";
+    }
+  }
+
+  // === UI bindings ===
   const el = (id) => document.getElementById(id);
 
   const tabs = [
@@ -986,13 +1117,11 @@ Progression: add reps weekly or add a loaded backpack.` }
 
   const photoStatusEl = el("photoStatus");
   const photoGridEl = el("photoGrid");
-  const addPhotoBtn = el("addPhotoBtn");
   const photoInput = el("photoInput");
 
   const viewer = el("viewer");
   const viewerImg = el("viewerImg");
   const viewerLabel = el("viewerLabel");
-  const viewerClose = el("viewerClose");
 
   const historyEl = el("history");
   const historyCountEl = el("historyCount");
@@ -1004,7 +1133,6 @@ Progression: add reps weekly or add a loaded backpack.` }
   const eventCountEl = el("eventCount");
 
   let data = loadData();
-  seedAnchorsIfNeeded();
 
   let currentDate = ymd();
   let calMonth = new Date();
@@ -1102,6 +1230,7 @@ Progression: add reps weekly or add a loaded backpack.` }
 
     renderCounts();
     renderStreak();
+    renderCorrespondences(currentDate);
     renderPhotos();
   }
 
@@ -1118,7 +1247,7 @@ Progression: add reps weekly or add a loaded backpack.` }
       return;
     }
 
-    for (const k of keys.slice(0, 120)) {
+    for (const k of keys.slice(0, 180)) {
       const day = data.days[k];
       const { done, total } = computeDone(day);
       const allDone = done === total;
@@ -1251,7 +1380,7 @@ Progression: add reps weekly or add a loaded backpack.` }
 
       const meta = document.createElement("div");
       meta.className = "meta";
-      meta.textContent = `source: ${e.source}`;
+      meta.textContent = `source: ${e.source || "manual"}`;
 
       const btnRow = document.createElement("div");
       btnRow.className = "btns";
@@ -1275,7 +1404,7 @@ Progression: add reps weekly or add a loaded backpack.` }
     }
   }
 
-  // Controls
+  // === Buttons / actions ===
   el("tab-today").addEventListener("click", () => setTab("tab-today"));
   el("tab-history").addEventListener("click", () => setTab("tab-history"));
   el("tab-calendar").addEventListener("click", () => setTab("tab-calendar"));
@@ -1300,14 +1429,14 @@ Progression: add reps weekly or add a loaded backpack.` }
     photoStatusEl.textContent = "Reset.";
   });
 
-  bindCheck(el("chk-sun"), "sun");
-  bindCheck(el("chk-altar"), "altar");
-  bindCheck(el("chk-workout"), "workout");
-  bindCheck(el("chk-coffee"), "coffee");
-  bindCheck(el("chk-journal_step"), "journal_step");
+  bindCheck(chkSun, "sun");
+  bindCheck(chkAltar, "altar");
+  bindCheck(chkWorkout, "workout");
+  bindCheck(chkCoffee, "coffee");
+  bindCheck(chkJournal, "journal_step");
 
-  el("addPhotoBtn").addEventListener("click", () => el("photoInput").click());
-  el("photoInput").addEventListener("change", async (e) => {
+  el("addPhotoBtn").addEventListener("click", () => photoInput.click());
+  photoInput.addEventListener("change", async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
@@ -1331,7 +1460,7 @@ Progression: add reps weekly or add a loaded backpack.` }
     }
   });
 
-  viewerClose.addEventListener("click", () => {
+  el("viewerClose").addEventListener("click", () => {
     viewer.classList.add("hide");
     viewer.setAttribute("aria-hidden", "true");
     viewerImg.src = "";
@@ -1358,6 +1487,7 @@ Progression: add reps weekly or add a loaded backpack.` }
   el("icsFile").addEventListener("change", async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+
     const text = await file.text();
     const parsed = parseIcs(text);
 
@@ -1373,17 +1503,84 @@ Progression: add reps weekly or add a loaded backpack.` }
     renderCalendar();
   });
 
-  // Settings buttons exist in HTML; keep behavior as earlier file versions if you need them pasted again.
-  // For now we keep this build focused on your requested structural changes.
+  // === Settings: export/import JSON + photo bundle + wipe ===
+  el("exportBtn").addEventListener("click", () => {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      data
+    };
+    downloadJSON(payload, `kindling-backup-${ymd()}.json`);
+  });
 
-  function renderCounts() {
-    const dayObj = ensureDay(currentDate);
-    const { done, total } = computeDone(dayObj);
-    doneCountEl.textContent = done;
-    totalCountEl.textContent = total;
-  }
+  el("importBtn").addEventListener("click", () => el("importFile").click());
+  el("importFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.data || !parsed.data.steps || !parsed.data.days) throw new Error("bad");
+      if (!confirm("Import will replace your current routine/events/day checks. Continue?")) { e.target.value = ""; return; }
+      data = parsed.data;
+      saveData();
+      currentDate = ymd();
+      calSelected = ymd();
+      renderToday();
+      renderHistory();
+      renderCalendar();
+      renderStreak();
+      alert("Imported.");
+    } catch {
+      alert("Import failed. File format not recognized.");
+    } finally {
+      e.target.value = "";
+    }
+  });
 
-  async function renderAll() {
+  el("exportPhotosBtn").addEventListener("click", async () => {
+    try {
+      const bundle = await exportPhotoBundle();
+      downloadJSON(bundle, `kindling-photos-${ymd()}.json`);
+    } catch {
+      alert("Photo export failed.");
+    }
+  });
+
+  el("importPhotosBtn").addEventListener("click", () => el("importPhotosFile").click());
+  el("importPhotosFile").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      const bundle = JSON.parse(raw);
+      if (!confirm("Import photos bundle? (Adds photos into local storage on this device.)")) { e.target.value = ""; return; }
+      await importPhotoBundle(bundle);
+      await renderPhotos();
+      alert("Photos imported.");
+    } catch {
+      alert("Photo import failed.");
+    } finally {
+      e.target.value = "";
+    }
+  });
+
+  el("wipeAllBtn").addEventListener("click", async () => {
+    if (!confirm("Wipe everything? This deletes all checks, events, and ALL photos from this device.")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    await wipePhotosDB();
+    data = loadData();
+    currentDate = ymd();
+    calSelected = ymd();
+    renderToday();
+    renderHistory();
+    renderCalendar();
+    renderStreak();
+    alert("Wiped.");
+  });
+
+  // === Init ===
+  function renderAll() {
     renderToday();
     renderHistory();
     renderCalendar();
