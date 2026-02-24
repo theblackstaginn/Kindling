@@ -14,17 +14,13 @@
       --bg-image: url("bg-ruins-v2.jpg");
 
       --bg:#0b0d12;
-      --glass: rgba(14,18,28,.72);
-      --glass2: rgba(18,23,37,.72);
       --text:#f2f4f8;
       --muted:#aab3c2;
-      --border: rgba(255,255,255,.10);
+      --border: rgba(255,255,255,.12);
       --accent:#d9b26b;
-      --ok:#7ee787;
       --danger:#ff6b6b;
 
       --radius:16px;
-      --shadow:0 22px 60px rgba(0,0,0,.62);
       --wrap:min(920px, calc(100% - 28px));
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
       --sans: ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial;
@@ -32,19 +28,20 @@
 
     *{ box-sizing:border-box; }
     html, body { height:100%; }
+
     body{
       margin:0;
       font-family:var(--sans);
       color:var(--text);
       background:
-        linear-gradient(180deg, rgba(11,13,18,.70), rgba(11,13,18,.86)),
+        linear-gradient(180deg, rgba(11,13,18,.65), rgba(11,13,18,.85)),
         var(--bg-image),
         var(--bg);
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
       -webkit-font-smoothing: antialiased;
-      padding: 18px 0 40px;
+      padding:18px 0 40px;
     }
 
     header{
@@ -61,9 +58,8 @@
 
     .pill{
       border:1px solid var(--border);
-      background: rgba(0,0,0,.22);
-      backdrop-filter: blur(10px);
-      padding:8px 10px;
+      background: transparent;
+      padding:8px 12px;
       border-radius:999px;
       font-size:12px;
       color:var(--muted);
@@ -83,8 +79,7 @@
     }
     .tab{
       border:1px solid var(--border);
-      background: rgba(0,0,0,.20);
-      backdrop-filter: blur(10px);
+      background: transparent;
       padding:10px 12px;
       border-radius:999px;
       font-size:13px;
@@ -93,8 +88,8 @@
       user-select:none;
     }
     .tab[aria-selected="true"]{
-      border-color: rgba(217,178,107,.45);
-      background: rgba(217,178,107,.14);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     main{
@@ -103,14 +98,15 @@
       display:grid;
       gap:12px;
     }
+
+    /* Fully transparent cards/panels */
     .card{
-      background: linear-gradient(180deg, var(--glass2), var(--glass));
+      background: transparent;
       border:1px solid var(--border);
       border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-      backdrop-filter: blur(10px);
+      padding:16px;
     }
+
     .row{
       display:flex;
       align-items:center;
@@ -118,50 +114,78 @@
       gap:12px;
       flex-wrap:wrap;
     }
+
     .small{ font-size:12px; color:var(--muted); }
     .mono{ font-family:var(--mono); }
 
-    /* Today steps */
-    .steps{ margin-top:10px; display:grid; gap:10px; }
-    label.step{
+    /* Sections inside Today */
+    .sections{
+      margin-top:12px;
+      display:grid;
+      gap:12px;
+    }
+
+    .section{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:12px;
+      background: transparent;
+    }
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+
+    .section-title{
+      font-size:12px;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .section-body{
+      font-size:14px;
+      line-height:1.55;
+      white-space:pre-wrap;
+    }
+
+    label.checkline{
       display:flex;
       align-items:center;
       gap:10px;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.07);
-      background: rgba(0,0,0,.16);
+      margin-top:8px;
     }
-    input[type="checkbox"]{ width:18px; height:18px; accent-color: var(--accent); }
-    .step span{ flex:1; font-size:14px; }
-    .tag{
-      font-family:var(--mono);
-      font-size:11px;
-      color:var(--muted);
-      border:1px solid rgba(255,255,255,.12);
-      padding:3px 7px;
-      border-radius:999px;
+
+    input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      accent-color: var(--accent);
     }
 
     .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
     button{
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      border:1px solid var(--border);
+      background: transparent;
       color:var(--text);
       padding:10px 12px;
       font-size:13px;
       cursor:pointer;
     }
-    button:hover{ border-color: rgba(217,178,107,.40); }
     button.primary{
-      background: rgba(217,178,107,.16);
-      border-color: rgba(217,178,107,.45);
+      border-color: var(--accent);
+      color: var(--accent);
     }
     button.danger{
-      background: rgba(255,107,107,.12);
-      border-color: rgba(255,107,107,.35);
+      border-color: var(--danger);
+      color: var(--danger);
     }
+
     input[type="file"]{ display:none; }
 
     /* Photo thumbs */
@@ -177,11 +201,11 @@
     .thumb{
       position:relative;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
       overflow:hidden;
-      background:rgba(0,0,0,.18);
       min-height:110px;
       cursor:pointer;
+      background: transparent;
     }
     .thumb img{
       width:100%;
@@ -224,8 +248,8 @@
       align-items:center;
       padding:10px 10px;
       border-radius:12px;
-      border:1px solid rgba(255,255,255,.07);
-      background: rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.10);
+      background: transparent;
       cursor:pointer;
     }
     .day .left{ display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -266,8 +290,8 @@
       .cal-wrap{ grid-template-columns: 1fr; }
     }
     .cal{
-      border:1px solid rgba(255,255,255,.07);
-      background: rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.12);
+      background: transparent;
       border-radius:14px;
       padding:12px;
     }
@@ -296,8 +320,8 @@
       padding:6px 0;
     }
     .cell{
-      border:1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.12);
+      border:1px solid rgba(255,255,255,.10);
+      background: transparent;
       border-radius:12px;
       min-height:56px;
       padding:8px;
@@ -329,14 +353,14 @@
       border:1px solid rgba(217,178,107,.40);
     }
     .events{
-      border:1px solid rgba(255,255,255,.07);
-      background: rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.12);
+      background: transparent;
       border-radius:14px;
       padding:12px;
     }
     .event{
-      border:1px solid rgba(255,255,255,.07);
-      background: rgba(0,0,0,.12);
+      border:1px solid rgba(255,255,255,.10);
+      background: transparent;
       border-radius:12px;
       padding:10px;
       margin-top:8px;
@@ -364,7 +388,7 @@
 
   <div class="tabs" role="tablist" aria-label="Kindling tabs">
     <div class="tab" id="tab-today" role="tab" aria-selected="true" tabindex="0">Today</div>
-    <div class="tab" id="tab-journal" role="tab" aria-selected="false" tabindex="0">History</div>
+    <div class="tab" id="tab-history" role="tab" aria-selected="false" tabindex="0">History</div>
     <div class="tab" id="tab-calendar" role="tab" aria-selected="false" tabindex="0">Calendar</div>
     <div class="tab" id="tab-settings" role="tab" aria-selected="false" tabindex="0">Settings</div>
   </div>
@@ -385,22 +409,81 @@
         </div>
       </div>
 
-      <div class="steps" id="steps"></div>
+      <div class="sections">
 
-      <div style="margin-top:12px;" class="small">
-        Journal (photo upload). Snap your handwritten entry, save it, move on.
+        <!-- Morning Sun -->
+        <div class="section" id="sec-sun">
+          <div class="section-head">
+            <div class="section-title">Morning Sun</div>
+          </div>
+          <div class="section-body" id="sunText">Step outside. Bare skin to light. 3–10 minutes. No phone.</div>
+          <label class="checkline">
+            <input type="checkbox" id="chk-sun" />
+            <span>Done</span>
+          </label>
+        </div>
+
+        <!-- Altar -->
+        <div class="section" id="sec-altar">
+          <div class="section-head">
+            <div class="section-title">Altar Ritual</div>
+          </div>
+          <div class="section-body" id="altarText"></div>
+          <label class="checkline">
+            <input type="checkbox" id="chk-altar" />
+            <span>Done</span>
+          </label>
+        </div>
+
+        <!-- Workout -->
+        <div class="section" id="sec-workout">
+          <div class="section-head">
+            <div class="section-title">Workout</div>
+            <div class="small mono" id="workoutDayLabel"></div>
+          </div>
+          <div class="section-body" id="workoutText"></div>
+          <label class="checkline">
+            <input type="checkbox" id="chk-workout" />
+            <span>Done</span>
+          </label>
+        </div>
+
+        <!-- Coffee -->
+        <div class="section" id="sec-coffee">
+          <div class="section-head">
+            <div class="section-title">Coffee</div>
+          </div>
+          <div class="section-body" id="coffeeText">Slow brew. Sit upright. No scrolling. Decide your one win for today.</div>
+          <label class="checkline">
+            <input type="checkbox" id="chk-coffee" />
+            <span>Done</span>
+          </label>
+        </div>
+
+        <!-- Journal Photos -->
+        <div class="section" id="sec-journal">
+          <div class="section-head">
+            <div class="section-title">Journal Photos</div>
+          </div>
+          <div class="section-body">Snap your handwritten page. Stored locally on this device.</div>
+
+          <div class="btns">
+            <button class="primary" id="addPhotoBtn">Add journal photo</button>
+            <input type="file" id="photoInput" accept="image/*" capture="environment" />
+            <button id="jumpToday">Jump to today</button>
+            <button class="danger" id="resetDayBtn" title="Clears checks and ALL photos for the loaded day">Reset this day</button>
+          </div>
+
+          <div class="small" id="photoStatus" style="margin-top:8px;"></div>
+          <div id="photoGrid"></div>
+
+          <label class="checkline">
+            <input type="checkbox" id="chk-journal_step" />
+            <span>Done</span>
+          </label>
+        </div>
+
       </div>
-
-      <div class="btns" style="margin-top:10px;">
-        <button class="primary" id="addPhotoBtn">Add journal photo</button>
-        <input type="file" id="photoInput" accept="image/*" capture="environment" />
-        <button id="jumpToday">Jump to today</button>
-        <button class="danger" id="resetDayBtn" title="Clears checks and photos for the loaded day">Reset this day</button>
-      </div>
-
-      <div class="small" id="photoStatus" style="margin-top:8px;"></div>
-
-      <div id="photoGrid"></div>
     </section>
 
     <!-- FULLSCREEN VIEWER -->
@@ -417,7 +500,7 @@
     </div>
 
     <!-- HISTORY -->
-    <section class="card hide" id="view-journal" aria-label="History view">
+    <section class="card hide" id="view-history" aria-label="History view">
       <div class="row">
         <div>
           <div class="small">History</div>
@@ -436,7 +519,7 @@
       <div class="row">
         <div>
           <div class="small">Calendar</div>
-          <div class="sub">Add your own events or import an .ics file.</div>
+          <div class="sub">Manual events + .ics import. (We are not bundling copyrighted calendars.)</div>
         </div>
         <div class="pill">
           <span>Events</span>
@@ -479,7 +562,7 @@
       <div class="row">
         <div>
           <div class="small">Backups</div>
-          <div class="sub">Export/import routine data. Export/import photo bundle separately.</div>
+          <div class="sub">Export/import routine/events. Export/import photo bundle separately.</div>
         </div>
       </div>
 
@@ -499,20 +582,21 @@
         iPhone install: open in Safari → Share → Add to Home Screen.
       </div>
     </section>
+
   </main>
 
 <script>
   // =========================================
   // Local data (routine + days + events)
   // =========================================
-  const STORAGE_KEY = "kindling_data_v3";
+  const STORAGE_KEY = "kindling_data_v4";
 
   const DEFAULT_STEPS = [
-    { id: "sun", label: "Morning sun" },
-    { id: "altar", label: "Altar" },
-    { id: "workout", label: "Light workout" },
+    { id: "sun", label: "Morning Sun" },
+    { id: "altar", label: "Altar Ritual" },
+    { id: "workout", label: "Workout" },
     { id: "coffee", label: "Coffee" },
-    { id: "journal_step", label: "Journal photo" }
+    { id: "journal_step", label: "Journal Photos" }
   ];
 
   const DEFAULT_ANCHORS = [
@@ -525,6 +609,88 @@
     { id:"anchor-samhain", date:"10-31", title:"Seasonal anchor: Samhain (approx)", desc:"Optional anchor. Adjust to your tradition." },
     { id:"anchor-yule", date:"12-21", title:"Seasonal anchor: Winter Solstice (approx)", desc:"Optional anchor. Adjust to your tradition." }
   ];
+
+  // Day-based workouts (simple, equipment-light, progressive via reps/time)
+  const WORKOUTS = {
+    0: { name: "Sunday — Mobility + Walk", text:
+`Mobility (10 minutes)
+- Neck/shoulder circles 60s
+- Hip openers 2 min
+- Hamstring stretch 2 min
+- Thoracic rotations 2 min
+- Deep squat hold 60–90s
+
+Then: 20–45 minute walk (easy pace)` },
+
+    1: { name: "Monday — Push", text:
+`3 rounds (rest 60–90s)
+- Pushups 8–15
+- Pike pushups 6–10
+- Chair dips 8–12
+- Plank 45–75s
+
+Finisher: slow pushups 1 set to near-failure` },
+
+    2: { name: "Tuesday — Legs", text:
+`4 rounds (rest 60–90s)
+- Squats 12–20
+- Reverse lunges 10 each leg
+- Glute bridge 15–25
+- Calf raises 20
+
+Finisher: wall sit 60–90s` },
+
+    3: { name: "Wednesday — Pull", text:
+`If you have a bar:
+- Pullups 4 sets (leave 1 rep in tank)
+- Dead hang 2 x 45–90s
+- Towel rows under a table 3 x 8–12
+
+If no bar:
+- Towel rows under table 4 x 8–15
+- Backpack rows 4 x 10–15
+- Rear delt raises (light) 3 x 12–20` },
+
+    4: { name: "Thursday — Core + Carry", text:
+`3 rounds
+- Leg raises 8–15
+- Russian twists 20–40
+- Side plank 30–60s each
+- Hollow hold 20–45s
+
+Optional: farmer carry (heavy buckets/backpack) 6–10 minutes total` },
+
+    5: { name: "Friday — Conditioning", text:
+`10–15 minutes (choose one)
+A) EMOM 10
+- Minute 1: 10 burpees
+- Minute 2: 40 mountain climbers
+
+B) 5 rounds
+- Jump rope 60s
+- Air squats 20
+- Rest 60s
+
+C) Hill sprints: 6–10 hard efforts (full rest)` },
+
+    6: { name: "Saturday — Strength Mix", text:
+`5 rounds (rest 60–90s)
+- Pushups 8–15
+- Squats 12–20
+- Rows 8–15
+- Plank 45–75s
+
+Progression: add reps weekly or add a loaded backpack.` }
+  };
+
+  // Daily altar ritual (short, consistent)
+  function altarRitualText() {
+    return `1) Light (candle/incense). One minute in silence.
+2) Ground (hand on stone/wood/earth). Feel weight and breath.
+3) Speak intention (one sentence): “Today I choose ______.”
+4) Offer thanks (one sentence): name one real thing.
+5) Seal (exhale + touch forehead/heart). Done.`;
+  }
 
   function loadData() {
     try {
@@ -602,7 +768,6 @@
   const DB_NAME = "kindling_photos_db";
   const DB_VER = 1;
   const STORE = "photos";
-  // record: { id, date, createdAt, blob }
 
   function openPhotoDB(){
     return new Promise((resolve, reject) => {
@@ -649,17 +814,6 @@
     });
   }
 
-  async function getPhoto(id){
-    const db = await openPhotoDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(STORE, "readonly");
-      const req = tx.objectStore(STORE).get(id);
-      req.onsuccess = () => resolve(req.result || null);
-      req.onerror = () => reject(req.error);
-      tx.oncomplete = () => db.close();
-    });
-  }
-
   async function deletePhoto(id){
     const db = await openPhotoDB();
     return new Promise((resolve, reject) => {
@@ -676,7 +830,6 @@
     for (const p of photos) await deletePhoto(p.id);
   }
 
-  // Photo bundle export/import (JSON with base64 images)
   function blobToDataURL(blob){
     return new Promise((resolve) => {
       const r = new FileReader();
@@ -711,20 +864,13 @@
     const packed = [];
     for (const rec of all) {
       const dataURL = await blobToDataURL(rec.blob);
-      packed.push({
-        id: rec.id,
-        date: rec.date,
-        createdAt: rec.createdAt,
-        dataURL
-      });
+      packed.push({ date: rec.date, createdAt: rec.createdAt, dataURL });
     }
-
     return { version: 1, exportedAt: new Date().toISOString(), photos: packed };
   }
 
   async function importPhotoBundle(bundle){
     if (!bundle || !Array.isArray(bundle.photos)) throw new Error("bad bundle");
-    // naive: add all. (IDs may collide; we remap IDs.)
     for (const p of bundle.photos) {
       const blob = dataURLToBlob(p.dataURL);
       await addPhoto(p.date, blob);
@@ -756,23 +902,13 @@
   }
 
   function getEventsForDate(dateKey) {
-    return data.events
-      .filter(e => e.date === dateKey)
-      .sort((a,b) => (a.title || "").localeCompare(b.title || ""));
+    return data.events.filter(e => e.date === dateKey).sort((a,b) => (a.title || "").localeCompare(b.title || ""));
   }
 
-  function countEvents() {
-    return data.events.length;
-  }
+  function countEvents() { return data.events.length; }
 
   function addEvent(dateKey, title, desc, source="manual") {
-    data.events.push({
-      id: uid("evt"),
-      date: dateKey,
-      title: title.trim(),
-      desc: (desc || "").trim(),
-      source
-    });
+    data.events.push({ id: uid("evt"), date: dateKey, title: title.trim(), desc: (desc || "").trim(), source });
     saveData();
   }
 
@@ -787,9 +923,7 @@
     for (const line of lines) {
       if (line.startsWith(" ") || line.startsWith("\t")) {
         if (unfolded.length) unfolded[unfolded.length-1] += line.slice(1);
-      } else {
-        unfolded.push(line);
-      }
+      } else unfolded.push(line);
     }
 
     const events = [];
@@ -827,7 +961,7 @@
 
   const tabs = [
     { tab: el("tab-today"), view: el("view-today") },
-    { tab: el("tab-journal"), view: el("view-journal") },
+    { tab: el("tab-history"), view: el("view-history") },
     { tab: el("tab-calendar"), view: el("view-calendar") },
     { tab: el("tab-settings"), view: el("view-settings") }
   ];
@@ -840,12 +974,22 @@
     }
   }
 
-  // Today
-  const stepsEl = el("steps");
+  // Today elements
   const todayLabelEl = el("todayLabel");
   const doneCountEl = el("doneCount");
   const totalCountEl = el("totalCount");
   const streakEl = el("streak");
+
+  const chkSun = el("chk-sun");
+  const chkAltar = el("chk-altar");
+  const chkWorkout = el("chk-workout");
+  const chkCoffee = el("chk-coffee");
+  const chkJournal = el("chk-journal_step");
+
+  const altarTextEl = el("altarText");
+  const workoutTextEl = el("workoutText");
+  const workoutDayLabelEl = el("workoutDayLabel");
+
   const photoStatusEl = el("photoStatus");
   const photoGridEl = el("photoGrid");
   const addPhotoBtn = el("addPhotoBtn");
@@ -871,19 +1015,31 @@
   let data = loadData();
   seedAnchorsIfNeeded();
 
-  let currentDate = ymd();      // loaded into Today view
-  let calMonth = new Date();    // month shown
-  let calSelected = ymd();      // selected day
-
-  function renderStreak() {
-    streakEl.textContent = computeStreak();
-  }
+  let currentDate = ymd();
+  let calMonth = new Date();
+  let calSelected = ymd();
 
   function renderCounts() {
     const dayObj = ensureDay(currentDate);
     const { done, total } = computeDone(dayObj);
     doneCountEl.textContent = done;
     totalCountEl.textContent = total;
+  }
+
+  function renderStreak() {
+    streakEl.textContent = computeStreak();
+  }
+
+  function bindCheck(chk, key) {
+    chk.onchange = () => {
+      const dayObj = ensureDay(currentDate);
+      dayObj.checks[key] = chk.checked;
+      dayObj.updatedAt = new Date().toISOString();
+      saveData();
+      renderCounts();
+      renderStreak();
+      renderHistory();
+    };
   }
 
   async function renderPhotos(){
@@ -933,44 +1089,27 @@
     }
   }
 
+  function renderWorkoutForDate(dateKey) {
+    const [y,m,d] = dateKey.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    const dow = dt.getDay();
+    const w = WORKOUTS[dow] || WORKOUTS[0];
+    workoutDayLabelEl.textContent = w.name;
+    workoutTextEl.textContent = w.text;
+  }
+
   function renderToday() {
-    ensureDay(currentDate);
+    const dayObj = ensureDay(currentDate);
     todayLabelEl.textContent = prettyDate(currentDate);
 
-    stepsEl.innerHTML = "";
-    const dayObj = ensureDay(currentDate);
+    altarTextEl.textContent = altarRitualText();
+    renderWorkoutForDate(currentDate);
 
-    for (const step of data.steps) {
-      const label = document.createElement("label");
-      label.className = "step";
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = !!dayObj.checks[step.id];
-      cb.addEventListener("change", () => {
-        dayObj.checks[step.id] = cb.checked;
-        dayObj.updatedAt = new Date().toISOString();
-        saveData();
-        renderCounts();
-        renderStreak();
-        renderHistory();
-      });
-
-      const text = document.createElement("span");
-      text.textContent = step.label;
-
-      const tag = document.createElement("span");
-      tag.className = "tag";
-      tag.textContent = cb.checked ? "done" : "open";
-      cb.addEventListener("change", () => {
-        tag.textContent = cb.checked ? "done" : "open";
-      });
-
-      label.appendChild(cb);
-      label.appendChild(text);
-      label.appendChild(tag);
-      stepsEl.appendChild(label);
-    }
+    chkSun.checked = !!dayObj.checks.sun;
+    chkAltar.checked = !!dayObj.checks.altar;
+    chkWorkout.checked = !!dayObj.checks.workout;
+    chkCoffee.checked = !!dayObj.checks.coffee;
+    chkJournal.checked = !!dayObj.checks.journal_step;
 
     renderCounts();
     renderStreak();
@@ -1154,7 +1293,7 @@
   // Controls
   // =========================================
   el("tab-today").addEventListener("click", () => setTab("tab-today"));
-  el("tab-journal").addEventListener("click", () => setTab("tab-journal"));
+  el("tab-history").addEventListener("click", () => setTab("tab-history"));
   el("tab-calendar").addEventListener("click", () => setTab("tab-calendar"));
   el("tab-settings").addEventListener("click", () => setTab("tab-settings"));
 
@@ -1177,6 +1316,13 @@
     photoStatusEl.textContent = "Reset.";
   });
 
+  // bind checks
+  bindCheck(chkSun, "sun");
+  bindCheck(chkAltar, "altar");
+  bindCheck(chkWorkout, "workout");
+  bindCheck(chkCoffee, "coffee");
+  bindCheck(chkJournal, "journal_step");
+
   // Photo add
   addPhotoBtn.addEventListener("click", () => photoInput.click());
   photoInput.addEventListener("change", async (e) => {
@@ -1186,11 +1332,13 @@
     try {
       photoStatusEl.textContent = "Saving photo...";
       await addPhoto(currentDate, file);
-      // Auto-check "Journal photo" step
+
+      // Auto-check Journal step when a photo is added
       const dayObj = ensureDay(currentDate);
       dayObj.checks["journal_step"] = true;
       dayObj.updatedAt = new Date().toISOString();
       saveData();
+
       renderCounts();
       renderStreak();
       await renderPhotos();
@@ -1326,7 +1474,6 @@
     if (!confirm("Wipe everything? This deletes all routine data AND all stored photos on this device.")) return;
     localStorage.removeItem(STORAGE_KEY);
 
-    // Delete IndexedDB database
     await new Promise((resolve) => {
       const req = indexedDB.deleteDatabase(DB_NAME);
       req.onsuccess = () => resolve(true);
